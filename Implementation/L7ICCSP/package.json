@@ -1,0 +1,17 @@
+{
+  "name": "L7ICCSP",
+  "version": "1.0.0",
+  "description": "Layer 7 Integrity Check for Cloud Service Providers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "Siva",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^11.1.1",
+    "typescript": "^4.1.3"
+  }
+}
