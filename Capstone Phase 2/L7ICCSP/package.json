@@ -8,7 +8,8 @@
     "build-tsc": "tsc",
     "render": "webpack --config webpack.common.js",
     "start": "npm run build-tsc && electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "temp": "tsc && node build/main/code/storage/local_access_storage.js"
   },
   "keywords": [],
   "author": "PW21HBP02",
@@ -17,6 +18,7 @@
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
+    "@types/jsonfile": "^6.0.0",
     "@types/node": "^14.14.20",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -30,6 +32,7 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
+    "jsonfile": "^6.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
