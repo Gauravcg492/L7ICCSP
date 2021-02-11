@@ -2,9 +2,9 @@ import { type } from "os";
 
 export interface Tree {
     // Returns Updated RootHash
-    add(filePath: string): string;
-    delete(filePath: string): string;
-    update(filePath: string): string;
+    add(fileHash: string): string;
+    delete(fileHash: string): string;
+    update(fileHash: string): string;
 }
 
 export type Node = {
