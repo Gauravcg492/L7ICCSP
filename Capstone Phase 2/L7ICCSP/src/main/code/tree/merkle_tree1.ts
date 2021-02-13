@@ -45,8 +45,32 @@ export class MerkleTree implements Tree {
 
     }
 
+    private hashesToNode(this: MerkleTree, hashes: string[]): void {
+        for (const hash of hashes) {
+            const hashArr = hash.split('$');
+
+            const childNode = this.getNode(hashArr[0]);
+            childNode.currentPosition = parseInt(hashArr[2]);
+            childNode.realPosition = parseInt(hashArr[3]);
+            this.hashToNode[hashArr[0]] = childNode;
+
+            this.childParentMap[hashArr[0]] = hashArr[1];
+
+            // check if the current node is root
+            if (hashArr[0] === hashArr[1]) {
+                this.root = childNode;
+            } else {
+                const parentNode = this.getNode(hashArr[1]);
+                parentNode.children?.push(childNode);
+                this.hashToNode[hashArr[1]] = parentNode;
+            }
+        }
+    }
+
     private getNodeTree(this: MerkleTree): Node {
         // use cloudclient to fetch the hashes
+        const hashes = this.cloudClient.getFilesByReg(this.rootNode.hash);
+
         return this.getNode("");
     }
 
@@ -57,7 +81,7 @@ export class MerkleTree implements Tree {
             this.rootNode.realPosition = this.LEAF;
             this.rootNode.currentPosition = this.LEAF;
             this.hashesToAdd.push(this.nodeToHash(this.rootNode));
-            this.hashToNode[fileHash] = this.rootNode; 
+            this.hashToNode[fileHash] = this.rootNode;
             return fileHash;
         }
         // if there are nodes
