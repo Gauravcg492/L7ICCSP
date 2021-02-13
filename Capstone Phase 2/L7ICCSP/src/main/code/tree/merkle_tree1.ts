@@ -1,6 +1,12 @@
 import { sep } from 'path';
 import { Tree, Node } from './tree';
 
+enum Complete {
+    NO = 1,
+    HALF,
+    FULL,
+}
+
 export class MerkleTree implements Tree {
     private childParentMap: { [key: string]: string };
     private hashToNode: { [key: string]: Node };
@@ -12,8 +18,8 @@ export class MerkleTree implements Tree {
     // cloud access api
     private cloudClient: any;
 
-    // Separator
-    private SEP = ',';
+    // CONSTANTS
+    private SEP = ','; // separator
     private LEAF = 1;
 
     constructor(rootHash: string, cloudClient: any) {
@@ -34,9 +40,21 @@ export class MerkleTree implements Tree {
         return this.hashToNode[hash];
     }
 
+    private isNodeComplete(node: Node) {
+        if ('realPosition' in node && 'currentPosition' in node) {
+            if ('children' in node) {
+                if (node.children?.length === 2) {
+                    return Complete.FULL;
+                }
+            }
+            return Complete.HALF;
+        }
+        return Complete.NO;
+    }
+
     private nodeToHash(this: MerkleTree, node: Node): string {
         const str1 = node.hash;
-        const str2 = this.childParentMap[str1];
+        const str2 = this.childParentMap[str1] ?? node.hash;
         const str3 = node.currentPosition?.toString();
         const str4 = node.realPosition?.toString();
         const sep = this.SEP;
@@ -47,30 +65,55 @@ export class MerkleTree implements Tree {
 
     private hashesToNode(this: MerkleTree, hashes: string[]): void {
         for (const hash of hashes) {
-            const hashArr = hash.split('$');
+            const hashArr = hash.split(this.SEP);
 
             const childNode = this.getNode(hashArr[0]);
-            childNode.currentPosition = parseInt(hashArr[2]);
-            childNode.realPosition = parseInt(hashArr[3]);
-            this.hashToNode[hashArr[0]] = childNode;
+            if (this.isNodeComplete(childNode) === Complete.NO) {
+                childNode.currentPosition = parseInt(hashArr[2]);
+                childNode.realPosition = parseInt(hashArr[3]);
+                this.hashToNode[hashArr[0]] = childNode;
 
-            this.childParentMap[hashArr[0]] = hashArr[1];
+                this.childParentMap[hashArr[0]] = hashArr[1];
+            }
 
             // check if the current node is root
-            if (hashArr[0] === hashArr[1]) {
-                this.root = childNode;
-            } else {
+            if (hashArr[0] !== hashArr[1]) {
                 const parentNode = this.getNode(hashArr[1]);
-                parentNode.children?.push(childNode);
-                this.hashToNode[hashArr[1]] = parentNode;
+                if (this.isNodeComplete(parentNode) !== Complete.FULL) {
+                    parentNode.children?.push(childNode);
+                    this.hashToNode[hashArr[1]] = parentNode;
+                }
             }
         }
     }
 
-    private getNodeTree(this: MerkleTree): Node {
+    private getNodeTree(this: MerkleTree, hash: string): Node {
         // use cloudclient to fetch the hashes
-        const hashes = this.cloudClient.getFilesByReg(this.rootNode.hash);
-
+        // Change Function name accordingly
+        // const hashes = this.cloudClient.getFilesByReg(hash); 
+        let hashes = ["ab,ab,2,2", "a,ab,1,1", "b,ab,1,1"]
+        // No root hash found in server (create new one)
+        if (hashes.length === 0) {
+            return this.getNode("");
+        }
+        // convert the initial hashes 
+        this.hashesToNode(hashes);
+        // find improper nodes, if not improper fetch more hashes until we reach leaf
+        const stack: Node[] = [];
+        stack.push(this.rootNode);
+        while (stack.length > 0) {
+            const current = stack.pop() ?? this.getNode("");
+            if ((current.currentPosition === current.realPosition && current === this.rootNode) || current.realPosition == 1) {
+                return current;
+            }
+            if (!("children" in current)) {
+                // hashes = this.cloudClient.getFilesByReg(current.hash)
+                this.hashesToNode(hashes);
+            }
+            for (let child of current.children ?? []) {
+                stack.push(child);
+            }
+        }
         return this.getNode("");
     }
 
