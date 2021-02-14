@@ -87,7 +87,7 @@ export class MerkleTree implements Tree {
         }
     }
 
-    private getNodeTree(this: MerkleTree, hash: string): Node {
+    private getNodeTreeTop(this: MerkleTree, hash: string): Node {
         // use cloudclient to fetch the hashes
         // Change Function name accordingly
         // const hashes = this.cloudClient.getFilesByReg(hash); 
@@ -119,7 +119,7 @@ export class MerkleTree implements Tree {
 
     add(this: MerkleTree, fileHash: string): string {
         // When there is no tree
-        if (this.rootNode.hash == "") {
+        if (this.rootNode.hash === "") {
             this.rootNode.hash = fileHash;
             this.rootNode.realPosition = this.LEAF;
             this.rootNode.currentPosition = this.LEAF;
@@ -129,7 +129,15 @@ export class MerkleTree implements Tree {
         }
         // if there are nodes
         // get the right node to hash 
-
+        const sibling = this.getNodeTreeTop(this.rootNode.hash);
+        // If no sibling found or tree fails 
+        if (sibling.hash === "") {
+            // TODO replace root node with new node delting all tree entries or
+            // stop add operation
+        } 
+        // modify nodes from bottom to top
+        let current = sibling
+        
         return "";
     }
 
