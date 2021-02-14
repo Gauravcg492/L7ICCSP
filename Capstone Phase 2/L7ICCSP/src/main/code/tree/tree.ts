@@ -1,15 +1,14 @@
-import { type } from "os";
-
 export interface Tree {
     // Returns Updated RootHash
-    add(fileHash: string): string;
-    delete(fileHash: string): string;
-    update(fileHash: string): string;
+    add(filePath: string): string;
+    delete(filePath: string): string;
+    update(filePath: string): string;
+    verify(filePath: string): string;
 }
 
 export type Node = {
     hash: string;
-    currentPosition?: Number;
-    realPosition?: Number;
+    currentPosition?: number;
+    realPosition?: number;
     children?: [Node, Node];
 }
