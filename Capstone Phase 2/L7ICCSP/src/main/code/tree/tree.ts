@@ -10,5 +10,5 @@ export type Node = {
     hash: string;
     currentPosition?: number;
     realPosition?: number;
-    children?: [Node, Node];
+    childPosition?: number;
 }
