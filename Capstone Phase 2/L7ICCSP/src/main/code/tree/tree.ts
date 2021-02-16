@@ -3,7 +3,6 @@ export interface Tree {
     add(filePath: string): string;
     delete(filePath: string): string;
     update(filePath: string): string;
-    verify(filePath: string): string;
 }
 
 export type Node = {
