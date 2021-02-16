@@ -1,5 +1,6 @@
 import { Tree, Node } from './tree';
 import { concat } from '../utils/hashes'
+import { parseNode } from '../utils/nodeParser'
 
 // TODO change the method name of cloud client accordingly
 export class MerkleTree implements Tree {
@@ -161,7 +162,4 @@ export class MerkleTree implements Tree {
         throw new Error('Method not implemented.');
     }
     
-    verify(filePath: string): string {
-        throw new Error('Method not implemented.');
-    }
 }
