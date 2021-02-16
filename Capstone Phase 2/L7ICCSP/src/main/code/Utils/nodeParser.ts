@@ -6,4 +6,5 @@ export function parseNode(filename : String){
     var str = filename; 
     var splitted = str.split(",", 6); 
     console.log(splitted);
+    return splitted;
 }
