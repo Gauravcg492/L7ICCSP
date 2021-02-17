@@ -1,7 +1,7 @@
 // interface for accessing files and uploading files
-interface AccessCloud{
+export interface AccessCloud{
     // change parameters and refine return types as we get clarity
-    getDirList(): string[];
-    getFile(): any;
-    putFile(): void;
+    getDirList(): string[];     // list files api
+    getFile(downLoc:string): any;     // download api
+    putFile(): void;    // Upload api
 }

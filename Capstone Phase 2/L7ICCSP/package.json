@@ -8,6 +8,7 @@
     "build-tsc": "tsc",
     "render": "webpack --config webpack.common.js",
     "start": "npm run build-tsc && electron .",
+    "test1": "tsc && node build/main/code/cli.js",
     "dist": "electron-builder"
   },
   "keywords": [],
@@ -30,6 +31,7 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
+    "googleapis": "^39.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
