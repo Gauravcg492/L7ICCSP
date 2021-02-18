@@ -11,17 +11,33 @@ const SCOPES = ['https://www.googleapis.com/auth/drive'];
 const TOKEN_PATH = 'token.json';
 
 export class GoogleAccessCloud implements AccessCloud {
-    private drive : any;
-    constructor(drive:any) {
+    private drive: any;
+    constructor(drive: any) {
         // Load client secrets from a local file.
         this.drive = drive;
     }
-    
+
     getDirList(): string[] {
+        //const drive = google.drive({ version: 'v3', auth });
+        this.drive.files.list({
+            pageSize: 10,
+            fields: 'nextPageToken, files(id, name)',
+        }, (err: any, res: any) => {
+            if (err) return console.log('The API returned an error: ' + err);
+            const files = res.data.files;
+            if (files.length) {
+                console.log('Files:');
+                files.map((file: any) => {
+                    console.log(`${file.name} (${file.id})`);
+                });
+            } else {
+                console.log('No files found.');
+            }
+        });
         throw new Error("Method not implemented.");
     }
 
-    getFile(downLoc: string) : void {
+    getFile(downLoc: string): void {
         let dir = `./downloads`; // directory from where node.js will look for downloaded file from google drive
 
         let fileId = process.argv[2]; // Desired file id to download from  google drive
@@ -57,11 +73,67 @@ export class GoogleAccessCloud implements AccessCloud {
             })
             .catch((err: any) => console.log(err));
     }
-    
-    putFile(): void { 
-        throw new Error("Method not implemented.");
+
+    putFile(): void {
+        // const drive = google.drive({ version: 'v3', auth });
+        var fileMetadata = {
+            'name': process.argv[2]
+        };
+        var media = {
+            mimeType: 'image/jpeg',
+            body: fs.createReadStream(process.argv[2])
+        };
+        this.drive.files.create({
+            resource: fileMetadata,
+            media: media,
+            fields: 'id'
+        }, function (err: any, res: any) {
+            if (err) {
+                // Handle error
+                console.log(err);
+            } else {
+                console.log("--- Upload successful ---");
+                console.log('File Id: ', res.data.id);
+            }
+        });
+
     }
 
+    rnFile(): void {
+        //const drive = google.drive({ version: 'v3', auth });
+        var body = { 'name': process.argv[3] };
+        this.drive.files.update({
+            fileId: process.argv[2],
+            resource: body,
+        }, (err: any, res: any) => {
+            if (err) return console.log('The API returned an error: ' + err);
+            else {
+                console.log('The name of the file has been updated!');
+            }
+        });
+    }
+
+    searchFile(): any {
+        //const drive = google.drive({ version: 'v3', auth });
+        this.drive.files.list({
+            pageSize: 10,
+            fields: 'nextPageToken, files(id, name)',
+        }, (err:any, res:any) => {
+            if (err) return console.log('The API returned an error: ' + err);
+            const files = res.data.files;
+            if (files.length) {
+                console.log('Files:');
+                files.map((file:any) => {
+                    if ((file.name).includes(process.argv[2])) {
+                        console.log(`${file.name} (${file.id})`);
+                    }
+                });
+            } else {
+                console.log('No files found.');
+            }
+        });
+        return "String not found";
+    }
 }
 
 // const accessCloud = new GoogleAccessCloud();

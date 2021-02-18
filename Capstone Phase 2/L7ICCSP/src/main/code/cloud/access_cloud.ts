@@ -4,4 +4,6 @@ export interface AccessCloud{
     getDirList(): string[];     // list files api
     getFile(downLoc:string): any;     // download api
     putFile(): void;    // Upload api
+    rnFile():void;      // Rename File
+    searchFile():any;  // Search File
 }
