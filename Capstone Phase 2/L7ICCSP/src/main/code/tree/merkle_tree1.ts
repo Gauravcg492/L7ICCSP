@@ -209,11 +209,10 @@ export class MerkleTree implements Tree {
             this.childParentMap[newNode.hash] = newParent.hash;
             this.childParentMap[sibling.hash] = newParent.hash;
 
-            // If sibling's parent exists keep updating the parents
+            // If sibling's parent exists keep updating the parents (first parent is outside the loop
+            // because its the only parent whose child is being replaced, rest only values change
             if (siblingParent) {
-                // sibling's old parent's child info will change
-                this.hashesToEdit[this.nodeToHash(siblingParent)] = siblingParent;
-
+                
                 // create loop which would propogate as it updates
                 let parent = siblingParent;
                 let child1 = newParent;
@@ -221,9 +220,13 @@ export class MerkleTree implements Tree {
                 while (parent.hash != child1.hash) {
                     // fetch parent's other sibling (if parent exists, then it will always have two children)
                     let child2 = this.getOtherChild(parent, child1);
+                    
+                    // sibling's old parent's child info will change
+                    this.hashesToEdit[this.nodeToHash(parent)] = parent;
                     // hash of parent will change so clear old hash garbage
                     this.clearOldHashInfo(parent.hash);
                     const oldHash = parent.hash;
+
                     parent.hash = concat(child1.hash, child2.hash);
                     // update hash to node relation so that new parent hash can map to it's node
                     this.shiftHashToNode(oldHash, parent.hash);
@@ -249,7 +252,22 @@ export class MerkleTree implements Tree {
     }
 
     deleteFromTree(fileHash: string): string {
-        throw new Error('Method not implemented.');
+        // hashes = prefixsearch(fileHash) TODO
+        const hashes:string[] = []
+        // Filehash node would have been created
+        this.hashesToNode(hashes);
+        const deleteNode = this.getNode(fileHash);
+        // Retrieve the parent to check if its present
+        let parent = this.childParentMap[deleteNode.hash];
+        if(parent) {
+            // TODO delete
+        } else {
+            // Assume file deleted or tampered and just return root
+            // TODO In download compare old and new root hash, if same throw error saying file tampered or
+            // metadata of file doesn't exist
+            
+        }
+        return "";
     }
 
     updateToTree(fileHash: string): string {
