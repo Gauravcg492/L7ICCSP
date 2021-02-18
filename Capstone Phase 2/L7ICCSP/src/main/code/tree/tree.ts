@@ -1,8 +1,8 @@
 export interface Tree {
     // Returns Updated RootHash
-    add(filePath: string): string;
-    delete(filePath: string): string;
-    update(filePath: string): string;
+    addToTree(filePath: string): string;
+    deleteFromTree(filePath: string): string;
+    updateToTree(filePath: string): string;
 }
 
 export type Node = {
