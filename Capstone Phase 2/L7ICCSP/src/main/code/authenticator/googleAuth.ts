@@ -1,7 +1,6 @@
 import { Authentication } from "./authentication"
-const fs = require('fs');
-const readline = require('readline');
-const { google } = require('googleapis');
+import fs from 'fs';
+import { google } from 'googleapis';
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
@@ -11,30 +10,31 @@ const SCOPES = ['https://www.googleapis.com/auth/drive'];
 const TOKEN_PATH = 'token.json';
 
 export class GoogleAuth implements Authentication {
-    private drive : any;
-    
+    private drive: any;
+    private oAuth2Client: any;
+    private token: any;
+    private authUrl: any;
+
     constructor() {
-        // Load client secrets from a local file.
-        fs.readFile('credentials.json', (err:any, content:any) => {
-            if (err) return console.log('Error loading client secret file:', err);
-            console.log("HI");
-            // Authorize a client with credentials, then call the Google Drive API.
-            this.authorize(JSON.parse(content), this.setDrive);
-        });
+        this.token = "";
+        this.authUrl = "";
     }
 
-    private setDrive(auth:any){
+    private setDrive(auth: any) {
         this.drive = google.drive({ version: 'v3', auth }); // Authenticating drive API
     }
 
-    public getDrive(){
+    public getDrive() {
         return this.drive;
     }
 
-    auth(): string {
-        throw new Error("Method not implemented.");
+    public isToken(): boolean {
+        return this.token !== "";
     }
 
+    public getAuthUrl() {
+        return this.authUrl;
+    }
 
     /**
      * Create an OAuth2 client with the given credentials, and then execute the
@@ -42,18 +42,28 @@ export class GoogleAuth implements Authentication {
      * @param {Object} credentials The authorization client credentials.
      * @param {function} callback The callback to call with the authorized client.
      */
-    private authorize(credentials:any, callback:any) {
-        const { client_secret, client_id, redirect_uris } = credentials.installed;
-        console.log("cred");
-        const oAuth2Client = new google.auth.OAuth2(
-            client_id, client_secret, redirect_uris[0]);
+    public async authorize(this: GoogleAuth): Promise<void> {
+        // Load client secrets from a local file.
+        try {
+            const credentials = JSON.parse(await fs.readFileSync('credentials.json') as unknown as string);
+            console.log("credentials");
+            // Authorize a client with credentials, then call the Google Drive API.
+            const { client_secret, client_id, redirect_uris } = credentials.installed;
+            console.log("cred");
+            this.oAuth2Client = new google.auth.OAuth2(
+                client_id, client_secret, redirect_uris[0]);
 
-        // Check if we have previously stored a token.
-        fs.readFile(TOKEN_PATH, (err:any, token:any) => {
-            if (err) return this.getAccessToken(oAuth2Client, callback);
-            oAuth2Client.setCredentials(JSON.parse(token));
-            callback(oAuth2Client);
-        });
+            this.authUrl = await this.oAuth2Client.generateAuthUrl({
+                access_type: 'offline',
+                scope: SCOPES,
+            });
+            // Check if we have previously stored a token.
+            this.token = await fs.readFileSync(TOKEN_PATH);
+            this.oAuth2Client.setCredentials(JSON.parse(this.token as unknown as string));
+            this.setDrive(this.oAuth2Client);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     /**
@@ -62,28 +72,13 @@ export class GoogleAuth implements Authentication {
      * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
      * @param {getEventsCallback} callback The callback for the authorized client.
      */
-    private getAccessToken(oAuth2Client:any, callback:any) {
-        const authUrl = oAuth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: SCOPES,
-        });
-        console.log('Authorize this app by visiting this url:', authUrl);
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        });
-        rl.question('Enter the code from that page here: ', (code:any) => {
-            rl.close();
-            oAuth2Client.getToken(code, (err:any, token:any) => {
-                if (err) return console.error('Error retrieving access token', err);
-                oAuth2Client.setCredentials(token);
-                // Store the token to disk for later program executions
-                fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err:any) => {
-                    if (err) return console.error(err);
-                    console.log('Token stored to', TOKEN_PATH);
-                });
-                callback(oAuth2Client);
-            });
+    public async getAccessToken(code: string): Promise<void> {
+        this.token = await this.oAuth2Client.getToken(code);
+        this.oAuth2Client.setCredentials(this.token);
+        this.setDrive(this.oAuth2Client);
+        fs.writeFile(TOKEN_PATH, JSON.stringify(this.token), (err: any) => {
+            if (err) return console.error(err);
+            console.log('Token stored to', TOKEN_PATH);
         });
     }
 
