@@ -20,6 +20,7 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@types/crypto-js": "^4.0.1",
+    "@types/gapi": "^0.0.39",
     "@types/jsonfile": "^6.0.0",
     "@types/node": "^14.14.20",
     "@types/react": "^17.0.0",
