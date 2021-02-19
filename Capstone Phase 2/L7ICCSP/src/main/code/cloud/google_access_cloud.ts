@@ -118,12 +118,12 @@ export class GoogleAccessCloud implements AccessCloud {
         this.drive.files.list({
             pageSize: 10,
             fields: 'nextPageToken, files(id, name)',
-        }, (err:any, res:any) => {
+        }, (err: any, res: any) => {
             if (err) return console.log('The API returned an error: ' + err);
             const files = res.data.files;
             if (files.length) {
                 console.log('Files:');
-                files.map((file:any) => {
+                files.map((file: any) => {
                     if ((file.name).includes(process.argv[2])) {
                         console.log(`${file.name} (${file.id})`);
                     }
