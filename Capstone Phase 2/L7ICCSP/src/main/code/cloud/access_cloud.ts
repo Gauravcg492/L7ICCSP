@@ -1,9 +1,9 @@
 // interface for accessing files and uploading files
 export interface AccessCloud{
     // change parameters and refine return types as we get clarity
-    getDirList(): string[];     // list files api
-    getFile(downLoc:string): any;     // download api
-    putFile(): void;    // Upload api
-    rnFile():void;      // Rename File
+    getDirList(): Promise<string[]>;     // list files api
+    getFile(dir: string, filename: string, callback: Function): Promise<void>;     // download api
+    putFile(filePath: string): void;    // Upload api
+    renameFile(oldFileName: string, newFileName: string):void;      // Rename File
     searchFile():any;  // Search File
 }
