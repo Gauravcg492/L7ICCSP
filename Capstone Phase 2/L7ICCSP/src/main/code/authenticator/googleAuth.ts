@@ -45,7 +45,7 @@ export class GoogleAuth implements Authentication {
     public async authorize(this: GoogleAuth): Promise<void> {
         // Load client secrets from a local file.
         try {
-            const credentials = JSON.parse(await fs.readFileSync('credentials.json') as unknown as string);
+            const credentials = JSON.parse(fs.readFileSync('credentials.json') as unknown as string);
             console.log("credentials");
             // Authorize a client with credentials, then call the Google Drive API.
             const { client_secret, client_id, redirect_uris } = credentials.installed;
@@ -58,7 +58,7 @@ export class GoogleAuth implements Authentication {
                 scope: SCOPES,
             });
             // Check if we have previously stored a token.
-            this.token = await fs.readFileSync(TOKEN_PATH);
+            this.token = fs.readFileSync(TOKEN_PATH);
             this.oAuth2Client.setCredentials(JSON.parse(this.token as unknown as string));
             this.setDrive(this.oAuth2Client);
         } catch (err) {
@@ -74,9 +74,9 @@ export class GoogleAuth implements Authentication {
      */
     public async getAccessToken(code: string): Promise<void> {
         this.token = await this.oAuth2Client.getToken(code);
-        this.oAuth2Client.setCredentials(this.token);
+        this.oAuth2Client.setCredentials(this.token['tokens']);
         this.setDrive(this.oAuth2Client);
-        fs.writeFile(TOKEN_PATH, JSON.stringify(this.token), (err: any) => {
+        fs.writeFile(TOKEN_PATH, JSON.stringify(this.token['tokens']), (err: any) => {
             if (err) return console.error(err);
             console.log('Token stored to', TOKEN_PATH);
         });
