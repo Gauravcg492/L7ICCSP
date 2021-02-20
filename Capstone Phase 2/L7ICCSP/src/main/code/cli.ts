@@ -16,8 +16,9 @@ const main = async () => {
         const it = rl[Symbol.asyncIterator]();
         console.log("Access this url to get required code: ", tester.getAuthUrl());
         const code = await it.next();
-        console.log(code)
-        tester.getAccessToken(code as unknown as string);
+        console.log("code: ",code)
+        tester.getAccessToken(code['value']);
+        console.log("Token: ", tester.isToken());
     }
 }
 
