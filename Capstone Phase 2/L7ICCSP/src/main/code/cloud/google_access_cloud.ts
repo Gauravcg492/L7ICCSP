@@ -1,50 +1,46 @@
 import { AccessCloud } from "./access_cloud";
-const fs = require('fs');
-const readline = require('readline');
-const { google } = require('googleapis');
+import fs from 'fs';
 
-// If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/drive'];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
-const TOKEN_PATH = 'token.json';
 
 export class GoogleAccessCloud implements AccessCloud {
     private drive: any;
+    private fileNameToId: { [key: string]: string };
     constructor(drive: any) {
         // Load client secrets from a local file.
         this.drive = drive;
+        this.fileNameToId = {};
     }
 
-    getDirList(): string[] {
-        //const drive = google.drive({ version: 'v3', auth });
-        this.drive.files.list({
-            pageSize: 10,
-            fields: 'nextPageToken, files(id, name)',
-        }, (err: any, res: any) => {
-            if (err) return console.log('The API returned an error: ' + err);
-            const files = res.data.files;
-            if (files.length) {
+    async getDirList(): Promise<string[]> {
+        try {
+            const res = await this.drive.files.list({
+                pageSize: 10,
+                fields: 'nextPageToken, files(id, name)',
+            });
+            if (res) {
+                const files = res.data.files;
                 console.log('Files:');
-                files.map((file: any) => {
-                    console.log(`${file.name} (${file.id})`);
-                });
-            } else {
-                console.log('No files found.');
+                if(files.length) {
+                    files.map((file: any) => {
+                        console.log(`${file.name} (${file.id})`);
+                        this.fileNameToId[file.name] = file.id;
+                    });
+                } else {
+                    console.log("No files found");
+                }
             }
-        });
-        throw new Error("Method not implemented.");
+            else {
+                console.log("no response");
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        return Object.keys(this.fileNameToId);
     }
 
-    getFile(downLoc: string): void {
-        let dir = `./downloads`; // directory from where node.js will look for downloaded file from google drive
-
-        let fileId = process.argv[2]; // Desired file id to download from  google drive
-
-        let dest = fs.createWriteStream('./downloads/' + process.argv[3]); // file path where google drive function will save the file
-
-        // const drive = google.drive({ version: 'v3', auth }); // Authenticating drive API
+    async getFile(dir: string, filename: string, callback: Function): Promise<void> {
+        const fileId = this.fileNameToId[filename];
+        let dest = fs.createWriteStream(dir + filename); // file path where google drive function will save the file
 
         let progress = 0; // This will contain the download progress amount
 
@@ -54,34 +50,35 @@ export class GoogleAccessCloud implements AccessCloud {
             .then((driveResponse: any) => {
                 driveResponse.data
                     .on('end', () => {
-
+                        console.log("Download Complete");
+                        callback(dir + filename);
                     })
                     .on('error', (err: any) => {
                         console.error('Error downloading file.');
                     })
                     .on('data', (d: any) => {
                         progress += d.length;
-                        /*
                         if (process.stdout.isTTY) {
-                            process.stdout.clearLine();
+                            process.stdout.clearLine(0);
                             process.stdout.cursorTo(0);
                             process.stdout.write(`Downloaded ${progress} bytes`);
                         }
-                        */
+
                     })
                     .pipe(dest);
             })
             .catch((err: any) => console.log(err));
     }
 
-    putFile(): void {
-        // const drive = google.drive({ version: 'v3', auth });
+    putFile(filePath: string): void {
+        const fileArray = filePath.split('/');
+        const filename = fileArray[fileArray.length - 1];
         var fileMetadata = {
-            'name': process.argv[2]
+            'name': filename
         };
         var media = {
             mimeType: 'image/jpeg',
-            body: fs.createReadStream(process.argv[2])
+            body: fs.createReadStream(filePath)
         };
         this.drive.files.create({
             resource: fileMetadata,
@@ -99,11 +96,11 @@ export class GoogleAccessCloud implements AccessCloud {
 
     }
 
-    rnFile(): void {
-        //const drive = google.drive({ version: 'v3', auth });
-        var body = { 'name': process.argv[3] };
+    renameFile(oldFileName: string, newFileName: string): void {
+        const fileId = this.fileNameToId[oldFileName];
+        var body = { 'name': newFileName };
         this.drive.files.update({
-            fileId: process.argv[2],
+            fileId: fileId,
             resource: body,
         }, (err: any, res: any) => {
             if (err) return console.log('The API returned an error: ' + err);
@@ -114,7 +111,6 @@ export class GoogleAccessCloud implements AccessCloud {
     }
 
     searchFile(): any {
-        //const drive = google.drive({ version: 'v3', auth });
         this.drive.files.list({
             pageSize: 10,
             fields: 'nextPageToken, files(id, name)',
