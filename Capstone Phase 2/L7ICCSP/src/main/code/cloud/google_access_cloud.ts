@@ -1,5 +1,5 @@
 import { AccessCloud } from "./access_cloud";
-import fs from 'fs';
+import fs, { promises } from 'fs';
 
 
 export class GoogleAccessCloud implements AccessCloud {
@@ -20,7 +20,7 @@ export class GoogleAccessCloud implements AccessCloud {
             if (res) {
                 const files = res.data.files;
                 console.log('Files:');
-                if(files.length) {
+                if (files.length) {
                     files.map((file: any) => {
                         console.log(`${file.name} (${file.id})`);
                         this.fileNameToId[file.name] = file.id;
@@ -110,25 +110,31 @@ export class GoogleAccessCloud implements AccessCloud {
         });
     }
 
-    searchFile(): any {
-        this.drive.files.list({
-            pageSize: 10,
-            fields: 'nextPageToken, files(id, name)',
-        }, (err: any, res: any) => {
-            if (err) return console.log('The API returned an error: ' + err);
+    async searchFile(filePrefix: string): Promise<string[]> {
+        const queryString = "name contains '"+ filePrefix +"'";
+        console.log("query string: ", queryString);
+        var pageToken = null;
+        const filenames:string[] = [];
+        try{
+            const res = await this.drive.files.list({
+                q: queryString,
+                fields: 'nextPageToken, files(name)',
+                spaces: 'drive',
+                pageToken: pageToken,
+            });
             const files = res.data.files;
             if (files.length) {
-                console.log('Files:');
+                console.log('Files:', files, '\n');
                 files.map((file: any) => {
-                    if ((file.name).includes(process.argv[2])) {
-                        console.log(`${file.name} (${file.id})`);
-                    }
+                    filenames.push(file['name']);
                 });
             } else {
                 console.log('No files found.');
             }
-        });
-        return "String not found";
+        } catch(err) {
+            console.log(err);
+        }
+        return filenames;
     }
 }
 
