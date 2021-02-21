@@ -8,6 +8,7 @@
     "build-tsc": "tsc",
     "render": "webpack --config webpack.common.js",
     "start": "npm run build-tsc && electron .",
+    "test1": "tsc && node build/main/code/cli.js",
     "dist": "electron-builder",
     "temp": "tsc && node build/main/code/utils/nodeParser.js"
   },
@@ -19,6 +20,7 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@types/crypto-js": "^4.0.1",
+    "@types/gapi": "^0.0.39",
     "@types/jsonfile": "^6.0.0",
     "@types/node": "^14.14.20",
     "@types/react": "^17.0.0",
@@ -35,6 +37,7 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
+    "googleapis": "^39.2.0",
     "jsonfile": "^6.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
