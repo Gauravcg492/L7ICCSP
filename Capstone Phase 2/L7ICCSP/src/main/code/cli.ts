@@ -29,13 +29,15 @@ const main = async () => {
     }
     rl.close();
     const access_cloud = new GoogleAccessCloud(tester.getDrive());
-    const files = await access_cloud.getDirList();
+    let files = await access_cloud.getDirList();
     console.log(files);
-    access_cloud.getFile('downloads/', files[files.length - 1], (file: string) => {
-        console.log("Calling callback: ", file);
-        const hash = sha256(file);
-        console.log("The hash is: ", hash);
-    });
+    // access_cloud.getFile('downloads/', files[files.length - 1], (file: string) => {
+    //     console.log("Calling callback: ", file);
+    //     const hash = sha256(file);
+    //     console.log("The hash is: ", hash);
+    // });
+    files = await access_cloud.searchFile('merkle');
+    console.log("files: ", files)
 }
 
 main();
