@@ -5,5 +5,5 @@ export interface AccessCloud{
     getFile(dir: string, filename: string, callback: Function): Promise<void>;     // download api
     putFile(filePath: string): void;    // Upload api
     renameFile(oldFileName: string, newFileName: string):void;      // Rename File
-    searchFile():any;  // Search File
+    searchFile(filePrefix: string): Promise<string[]>;  // Search File
 }
