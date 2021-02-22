@@ -2,6 +2,7 @@ import { Tree, Node } from './tree';
 import { concat } from '../utils/hashes';
 import { AccessCloud } from '../cloud/access_cloud';
 import { constants } from '../utils/constants';
+import fs from 'fs';
 
 // TODO change the method name of cloud client accordingly
 export class MerkleTree implements Tree {
@@ -97,6 +98,7 @@ export class MerkleTree implements Tree {
         let hashes = await this.cloudClient.searchFile(hash, this.TREEDIR);
         // let hashes = ["ab,ab,a,b,2,2", "a,ab,0,0,1,1", "b,ab,0,0,1,1"]
         // No root hash found in server (create new one)
+        console.log("GetNodeTreeTop: Hashes = ",hashes);
         if (hashes.length === 0) {
             return this.getNode("");
         }
@@ -159,7 +161,9 @@ export class MerkleTree implements Tree {
 
     private updateMerkle(this: MerkleTree) {
         this.hashesToAdd.forEach(node => {
-            this.cloudClient.putFile(this.nodeToHash(node), this.TREEDIR);
+            const nodeHash = './temp/'+  this.nodeToHash(node);
+            fs.closeSync(fs.openSync(nodeHash, 'w'));
+            this.cloudClient.putFile(nodeHash, this.TREEDIR);
         });
         for(let hash in this.hashesToEdit) {
             this.cloudClient.renameFile(hash, this.nodeToHash(this.hashesToEdit[hash]));
@@ -181,6 +185,7 @@ export class MerkleTree implements Tree {
         // if there are nodes
         // get the right node to hash 
         const sibling = await this.getNodeTreeTop(this.rootNode.hash);
+        console.log("sibling: ", sibling);
         // If no sibling found or tree fails 
         if (sibling.hash === "") {
             // TODO replace root node with new node deleting all tree entries or
@@ -196,6 +201,7 @@ export class MerkleTree implements Tree {
         // Create new Parent (this parent becomes child of sibling's parent)
         const newParent = this.getNode(concat(sibling.hash, newNode.hash));
         this.hashesToAdd.push(newParent);
+        console.log(newParent);
         // Add the new parent in place of sibling
         if ('realPosition' in sibling) {
             // Update only real position of parent and update sibling and child's current pos
@@ -219,12 +225,16 @@ export class MerkleTree implements Tree {
             const siblingParent = this.getNode(this.childParentMap[sibling.hash]);
 
             // Now sibling's parent can be modified to new parent along with new node
+            console.log("new ",newNode);
+            console.log("par ",newParent);
+            console.log("sib ",sibling);
+            console.log("sibparent ", siblingParent);
             this.childParentMap[newNode.hash] = newParent.hash;
             this.childParentMap[sibling.hash] = newParent.hash;
 
             // If sibling's parent exists keep updating the parents (first parent is outside the loop
             // because its the only parent whose child is being replaced, rest only values change
-            if (siblingParent) {
+            if (siblingParent.hash && siblingParent != sibling) {
 
                 // create loop which would propogate as it updates
                 let parent = siblingParent;
