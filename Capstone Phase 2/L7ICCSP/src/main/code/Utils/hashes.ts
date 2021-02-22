@@ -22,6 +22,9 @@ export function concat(s1: string, s2: string){
     else{
         s = s1.concat(s2.toString());
     }
+    console.log(s);
     return CryptoJS.SHA256(s).toString(CryptoJS.enc.Hex);
 }
-
+// let a = "a9df5381f1d9c454ae92e83afe5ff536bcef949254e61fa8f2ff3721e7ee6611";
+// let b = "bff0d3f4caf91b0ec6745c12f6435b2344958881e8cfc4bd450b7afb2fa18be0";
+// console.log(concat('b', 'c'));
