@@ -6,7 +6,6 @@ import { constants } from '../utils/constants';
 export class GoogleAccessCloud implements AccessCloud {
     private drive: any;
     private fileNameToId: { [key: string]: string };
-    private folderToId: { [key: string]: string };
 
     private ROOTDIR = constants.ROOTDIR;
     private TREEDIR = constants.TREEDIR;
@@ -15,11 +14,10 @@ export class GoogleAccessCloud implements AccessCloud {
         // Load client secrets from a local file.
         this.drive = drive;
         this.fileNameToId = {};
-        this.folderToId = {};
     }
 
     private getFolderId(foldername: string): string {
-        return this.folderToId[foldername] ?? "";
+        return this.fileNameToId[foldername] ?? "";
     }
 
     async getDirList(dir = this.ROOTDIR): Promise<string[]> {
@@ -136,7 +134,7 @@ export class GoogleAccessCloud implements AccessCloud {
     async searchFile(filePrefix: string, dir = this.TREEDIR): Promise<string[]> {
         const queryString1 = `name contains '${filePrefix}' `
         let queryString2 = "";
-        if (dir !== "") {
+        if (dir !== "" && this.getFolderId(dir) !== "") {
             queryString2 = `and '${this.getFolderId(dir)}' in parents`;
         }
         const queryString = queryString1 + queryString2;
@@ -183,7 +181,7 @@ export class GoogleAccessCloud implements AccessCloud {
                 fields: 'id'
             });
             if (file) {
-                this.folderToId[folderName] = file.data.id;
+                this.fileNameToId[folderName] = file.data.id;
             }
         } catch (err) {
             console.log(err);
