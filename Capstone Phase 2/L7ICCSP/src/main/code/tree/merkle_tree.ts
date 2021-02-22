@@ -94,7 +94,7 @@ export class MerkleTree implements Tree {
     private async getNodeTreeTop(this: MerkleTree, hash: string): Promise<Node> {
         // use cloudclient to fetch the hashes
         // Change Function name accordingly
-        let hashes = await this.cloudClient.searchFile(hash, this.TREEDIR); 
+        let hashes = await this.cloudClient.searchFile(hash, this.TREEDIR);
         // let hashes = ["ab,ab,a,b,2,2", "a,ab,0,0,1,1", "b,ab,0,0,1,1"]
         // No root hash found in server (create new one)
         if (hashes.length === 0) {
@@ -157,6 +157,15 @@ export class MerkleTree implements Tree {
         delete this.hashToNode[oldHash];
     }
 
+    private updateMerkle(this: MerkleTree) {
+        this.hashesToAdd.forEach(node => {
+            this.cloudClient.putFile(this.nodeToHash(node), this.TREEDIR);
+        });
+        for(let hash in this.hashesToEdit) {
+            this.cloudClient.renameFile(hash, this.nodeToHash(this.hashesToEdit[hash]));
+        }
+    }
+
     async addToTree(this: MerkleTree, fileHash: string): Promise<string> {
         const newNode = this.getNode(fileHash);
         this.hashesToAdd.push(newNode);
@@ -165,6 +174,7 @@ export class MerkleTree implements Tree {
         // When there is no tree
         if (this.rootNode.hash === "") {
             newNode.currentPosition = this.LEAF;
+            this.updateMerkle();
             return fileHash;
         }
 
@@ -175,6 +185,7 @@ export class MerkleTree implements Tree {
         if (sibling.hash === "") {
             // TODO replace root node with new node deleting all tree entries or
             // stop add operation
+            return "";
         }
 
         // modify nodes from bottom to top
@@ -214,7 +225,7 @@ export class MerkleTree implements Tree {
             // If sibling's parent exists keep updating the parents (first parent is outside the loop
             // because its the only parent whose child is being replaced, rest only values change
             if (siblingParent) {
-                
+
                 // create loop which would propogate as it updates
                 let parent = siblingParent;
                 let child1 = newParent;
@@ -222,7 +233,7 @@ export class MerkleTree implements Tree {
                 while (parent.hash != child1.hash) {
                     // fetch parent's other sibling (if parent exists, then it will always have two children)
                     let child2 = this.getOtherChild(parent, child1);
-                    
+
                     // sibling's old parent's child info will change
                     this.hashesToEdit[this.nodeToHash(parent)] = parent;
                     // hash of parent will change so clear old hash garbage
@@ -241,11 +252,13 @@ export class MerkleTree implements Tree {
                     child1 = parent;
                     parent = this.getNode(this.childParentMap[parent.hash]);
                 }
+                this.updateMerkle();
                 return child1.hash;
             } else {
                 // no parent so new parent becomes root
                 this.childParentMap[newParent.hash] = newParent.hash;
                 newParent.currentPosition = Math.max(sibling.currentPosition ?? 1, newNode.currentPosition ?? 1);
+                this.updateMerkle();
                 return newParent.hash
             }
         }
@@ -253,26 +266,26 @@ export class MerkleTree implements Tree {
         return "";
     }
 
-    deleteFromTree(fileHash: string): string {
+    async deleteFromTree(fileHash: string): Promise<string> {
         // hashes = prefixsearch(fileHash) TODO
-        const hashes:string[] = []
+        const hashes: string[] = []
         // Filehash node would have been created
         this.hashesToNode(hashes);
         const deleteNode = this.getNode(fileHash);
         // Retrieve the parent to check if its present
         let parent = this.childParentMap[deleteNode.hash];
-        if(parent) {
+        if (parent) {
             // TODO delete
         } else {
             // Assume file deleted or tampered and just return root
             // TODO In download compare old and new root hash, if same throw error saying file tampered or
             // metadata of file doesn't exist
-            
+
         }
         return "";
     }
 
-    updateToTree(fileHash: string): string {
+    async updateToTree(fileHash: string): Promise<string> {
         throw new Error('Method not implemented.');
     }
 

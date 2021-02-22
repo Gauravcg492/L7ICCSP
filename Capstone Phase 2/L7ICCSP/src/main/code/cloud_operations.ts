@@ -5,8 +5,9 @@ import { AccessCloud } from './cloud/access_cloud';
 import { Authentication } from './authenticator/authentication';
 import { constants } from './utils/constants';
 import { Tree } from './tree/tree';
+import { MerkleTree } from './tree/merkle_tree';
 // Class which handles upload and download
-class CloudOperations {
+export class CloudOperations {
 
     private id: string;
     private configPath: string;
@@ -28,18 +29,24 @@ class CloudOperations {
         return await verify(filehash, rootHash, this.cloudClient);
     }
 
-    upload(file: string, isFolder = false, dir: string): void {
+    async upload(file: string, isFolder = false, dir: string): Promise<void> {
+        console.log("upload called");
         if ( isFolder ) {
             this.cloudClient.putFolder(file, dir);
         } else {
             this.cloudClient.putFile(file, dir);
         }
-        const rootHash = this.storage.getRootHash({
+        const obj: any = {
             id: this.id,
             configPath: this.configPath
-        });
-
-
+        }
+        console.log("Obj: ", obj);
+        const rootHash = this.storage.getRootHash(obj);
+        console.log("RootHash");
+        const merkleTree: Tree = new MerkleTree(rootHash, this.cloudClient);
+        const fileHash = sha256(file);
+        obj.hash = await merkleTree.addToTree(fileHash);
+        this.storage.putRootHash(obj);
     }
     download(): any {
 
