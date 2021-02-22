@@ -32,11 +32,11 @@ const main = async () => {
     console.log("Search file");
     let files = await access_cloud.searchFile('L7ICCSP', "");
     if(files.length === 0) {
-        access_cloud.putFolder('L7ICCSP', "");
+        await access_cloud.putFolder('L7ICCSP', "");
     }
     files = await access_cloud.searchFile('merkle', "");
     if(files.length === 0) {
-        access_cloud.putFolder('merkle', "");
+        await access_cloud.putFolder('merkle', "");
     }
     // console.log("List file")
     // let files = await access_cloud.getDirList("");
@@ -52,7 +52,8 @@ const main = async () => {
     // console.log(rootHash);
     const storage: AccessStorage = new LocalAccessStorage();
     const operations = new CloudOperations(access_cloud, tester, storage);
-    await operations.upload('config.json', false, constants.ROOTDIR);
+    // await operations.setUser();
+    await operations.upload('index.html', false, constants.ROOTDIR);
     console.log('Upload done');
 }
 
