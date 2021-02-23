@@ -38,8 +38,8 @@ const main = async () => {
     if(files.length === 0) {
         await access_cloud.putFolder('merkle', "");
     }
-    // console.log("List file")
-    // let files = await access_cloud.getDirList("");
+    console.log("List file")
+    files = await access_cloud.getDirList(constants.ROOTDIR);
     // console.log(files);
     // access_cloud.getFile('downloads/', files[files.length - 1], (file: string) => {
     //     console.log("Calling callback: ", file);
@@ -53,8 +53,9 @@ const main = async () => {
     const storage: AccessStorage = new LocalAccessStorage();
     const operations = new CloudOperations(access_cloud, tester, storage);
     // await operations.setUser();
-    await operations.upload('index.html', false, constants.ROOTDIR);
-    console.log('Upload done');
+    // await operations.upload('config.json', false, constants.ROOTDIR);
+    // console.log('Upload done');
+    // operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "config.json");
 }
 
 main();
