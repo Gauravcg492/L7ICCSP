@@ -66,7 +66,7 @@ export class GoogleAccessCloud implements AccessCloud {
                 driveResponse.data
                     .on('end', () => {
                         console.log("Download Complete");
-                        callback(dir + filename);
+                        callback(dir + '/' + filename);
                     })
                     .on('error', (err: any) => {
                         console.error('Error downloading file.');
