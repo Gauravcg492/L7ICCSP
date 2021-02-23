@@ -20,7 +20,7 @@ export class GoogleAccessCloud implements AccessCloud {
         return this.fileNameToId[foldername] ?? "";
     }
 
-    async getDirList(dir = this.ROOTDIR): Promise<string[]> {
+    async getDirList(this: GoogleAccessCloud, dir = this.ROOTDIR): Promise<string[]> {
         const fileNames: string[] = [];
         try {
             let queryString = "";
@@ -53,9 +53,9 @@ export class GoogleAccessCloud implements AccessCloud {
         return fileNames;
     }
 
-    async getFile(dir: string, filename: string, callback: Function): Promise<void> {
+    async getFile(this: GoogleAccessCloud, dir: string, filename: string, callback: Function): Promise<void> {
         const fileId = this.fileNameToId[filename];
-        let dest = fs.createWriteStream(dir + filename); // file path where google drive function will save the file
+        let dest = fs.createWriteStream(dir + '/' + filename); // file path where google drive function will save the file
 
         let progress = 0; // This will contain the download progress amount
 
@@ -85,7 +85,8 @@ export class GoogleAccessCloud implements AccessCloud {
             .catch((err: any) => console.log(err));
     }
 
-    putFile(filePath: string, dir: string): void {
+    async putFile(this: GoogleAccessCloud, filePath: string, dir: string): Promise<void> {
+        console.log("Upload called")
         const folderIds = [];
         const folderId = this.getFolderId(dir);
         if (folderId.length > 0) {
@@ -101,37 +102,42 @@ export class GoogleAccessCloud implements AccessCloud {
             mimeType: 'image/jpeg',
             body: fs.createReadStream(filePath)
         };
-        this.drive.files.create({
-            resource: fileMetadata,
-            media: media,
-            fields: 'id'
-        }, function (err: any, res: any) {
-            if (err) {
-                // Handle error
-                console.log(err);
-            } else {
-                console.log("--- Upload successful ---");
+        try {
+            const res = await this.drive.files.create({
+                resource: fileMetadata,
+                media: media,
+                fields: 'id'
+            });
+            if(res) {
                 console.log('File Id: ', res.data.id);
+                this.fileNameToId[filename] = res.data.id;
+                console.log("ID", this.fileNameToId[filename]);
+            } else{
+                console.log("Upload failed");
             }
-        });
+        } catch (error) {
+            console.log(error);
+        }
 
     }
 
-    renameFile(oldFileName: string, newFileName: string): void {
+    renameFile(this: GoogleAccessCloud, oldFileName: string, newFileName: string): void {
+        console.log("Rename Called")
         const fileId = this.fileNameToId[oldFileName];
-        var body = { 'name': newFileName };
+        console.log("Inside rename fileid: ", fileId);
+        const body = { 'name': newFileName };
         this.drive.files.update({
             fileId: fileId,
             resource: body,
         }, (err: any, res: any) => {
-            if (err) return console.log('The API returned an error: ' + err);
+            if (err) console.log('The API returned an error: ' + err);
             else {
                 console.log('The name of the file has been updated!');
             }
         });
     }
 
-    async searchFile(filePrefix: string, dir = this.TREEDIR): Promise<string[]> {
+    async searchFile(this: GoogleAccessCloud, filePrefix: string, dir = this.TREEDIR): Promise<string[]> {
         const queryString1 = `name contains '${filePrefix}' `
         let queryString2 = "";
         if (dir !== "" && this.getFolderId(dir) !== "") {
@@ -164,7 +170,7 @@ export class GoogleAccessCloud implements AccessCloud {
         return filenames;
     }
 
-    async putFolder(folderName: string, dir: string): Promise<void> {
+    async putFolder(this: GoogleAccessCloud, folderName: string, dir: string): Promise<void> {
         const folderIds = [];
         const folderId = this.getFolderId(dir);
         if (folderId.length > 0) {
