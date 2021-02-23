@@ -6,6 +6,7 @@ import { Authentication } from './authenticator/authentication';
 import { constants } from './utils/constants';
 import { Tree } from './tree/tree';
 import { MerkleTree } from './tree/merkle_tree';
+import fs from 'fs';
 // Class which handles upload and download
 export class CloudOperations {
 
@@ -21,7 +22,7 @@ export class CloudOperations {
         this.id = await this.authentication.getUserId();
     }
 
-    private async verify(filehash: string): Promise<Boolean> {
+    private async verify(filehash: string): Promise<boolean> {
         const rootHash = this.storage.getRootHash({
             id: this.id,
             configPath: this.configPath
@@ -48,7 +49,21 @@ export class CloudOperations {
         obj.hash = await merkleTree.addToTree(fileHash);
         this.storage.putRootHash(obj);
     }
-    download(): any {
-
+    download(localDir: string, filename: string): any {
+        console.log("Starting Download");
+        this.cloudClient.getFile(localDir, filename, (filePath: string) => {
+            const fileHash = sha256(filePath);
+            this.verify(fileHash).then((isAuthentic: boolean) => {
+                if(isAuthentic) {
+                    console.log("File is Authentic");
+                } else{
+                    console.log("File is tampered");
+                    // TODO delete file
+                    fs.unlink(filePath, ()=>{
+                        console.log("Deleted the file");
+                    });
+                }
+            });
+        });
     }
 }
