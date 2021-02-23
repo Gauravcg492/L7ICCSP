@@ -55,8 +55,8 @@ export class MerkleTree implements Tree {
     private nodeToHash(this: MerkleTree, node: Node): string {
         const str1 = node.hash;
         const str2 = this.childParentMap[str1] ?? node.hash;
-        const str3 = this.leftChild[str1] ?? '0';
-        const str4 = this.rightChild[str1] ?? '0';
+        const str3 = (this.leftChild[str1] ? this.leftChild[str1].hash : '0');
+        const str4 = (this.rightChild[str1] ? this.rightChild[str1].hash : '0');
         const str5 = node.currentPosition?.toString();
         const str6 = node.realPosition?.toString();
         const sep = this.SEP;
@@ -141,7 +141,7 @@ export class MerkleTree implements Tree {
     }
 
     private updateChildInfo(parent: Node, child: Node): void {
-        if (child.childPosition) {
+        if (!child.childPosition) {
             child.childPosition = 0;
             this.leftChild[parent.hash] = child;
         } else {
@@ -161,9 +161,15 @@ export class MerkleTree implements Tree {
 
     private updateMerkle(this: MerkleTree) {
         this.hashesToAdd.forEach(node => {
-            const nodeHash = './temp/'+  this.nodeToHash(node);
-            fs.closeSync(fs.openSync(nodeHash, 'w'));
-            this.cloudClient.putFile(nodeHash, this.TREEDIR);
+            console.log("Adding node");
+            const tempDir = "./temp/";
+            const tempName = "merkleFile";
+            const temp = tempDir + tempName;
+            fs.closeSync(fs.openSync(temp, 'w'));
+            this.cloudClient.putFile(temp, this.TREEDIR).then(() => {
+                console.log("rename calling");
+                this.cloudClient.renameFile(tempName, this.nodeToHash(node));
+            });
         });
         for(let hash in this.hashesToEdit) {
             this.cloudClient.renameFile(hash, this.nodeToHash(this.hashesToEdit[hash]));
@@ -267,7 +273,7 @@ export class MerkleTree implements Tree {
             } else {
                 // no parent so new parent becomes root
                 this.childParentMap[newParent.hash] = newParent.hash;
-                newParent.currentPosition = Math.max(sibling.currentPosition ?? 1, newNode.currentPosition ?? 1);
+                newParent.currentPosition = Math.max(sibling.currentPosition ?? 1, newNode.currentPosition ?? 1) + 1;
                 this.updateMerkle();
                 return newParent.hash
             }
