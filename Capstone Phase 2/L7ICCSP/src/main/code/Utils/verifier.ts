@@ -3,26 +3,27 @@ import { concat } from './hashes';
 import { AccessCloud } from '../cloud/access_cloud';
 import { constants } from './constants';
 
-function chooseNode(SearchArray : any,hashFile : string){
-   SearchArray.forEach((element:string) => {
-       if (parseNode(element)[0] == hashFile){
-           return element;
-       }
-   });
-   return "";
+function chooseNode(searchArray: string[], hashFile: string): string {
+    for(let index = 0; index < searchArray.length; index++) {
+        if(parseNode(searchArray[index])[0] === hashFile) {
+            return searchArray[index];
+        }
+    }
+    return "";
 }
 
 export async function verify(hashFile: string, rootHash: string, cloudClient: AccessCloud): Promise<boolean> {
 
-    // TODO : Can be a list or just a string
-    let filename_arr = parseNode(chooseNode(await cloudClient.searchFile(hashFile, constants.TREEDIR),hashFile));
+    const searchArray = await cloudClient.searchFile(hashFile, constants.TREEDIR);
+    let filename_arr = parseNode(chooseNode(searchArray, hashFile));
     // let filename_arr = ['a', 'b', 'c', 'd', 'e', 'f'];   // Needs to be replaces
     // Retrieve Parent node details
+    console.log("filename: ", filename_arr);
     let tmp;
     let sibling;
     let curr_node = hashFile;
 
-    while (filename_arr[0] != filename_arr[1]) {
+    while (filename_arr[0] !== "" && filename_arr[0] !== filename_arr[1]) {
         // Call to drive-api : Search
         tmp = parseNode((await cloudClient.searchFile(filename_arr[1], constants.TREEDIR))[0]);
         sibling = tmp[3];
