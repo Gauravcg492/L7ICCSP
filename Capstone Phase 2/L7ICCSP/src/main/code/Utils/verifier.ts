@@ -3,10 +3,19 @@ import { concat } from './hashes';
 import { AccessCloud } from '../cloud/access_cloud';
 import { constants } from './constants';
 
+function chooseNode(SearchArray : any,hashFile : string){
+   SearchArray.forEach((element:string) => {
+       if (parseNode(element)[0] == hashFile){
+           return element;
+       }
+   });
+   return "";
+}
+
 export async function verify(hashFile: string, rootHash: string, cloudClient: AccessCloud): Promise<boolean> {
 
     // TODO : Can be a list or just a string
-    let filename_arr = parseNode((await cloudClient.searchFile(hashFile, constants.TREEDIR))[0]);
+    let filename_arr = parseNode(chooseNode(await cloudClient.searchFile(hashFile, constants.TREEDIR),hashFile));
     // let filename_arr = ['a', 'b', 'c', 'd', 'e', 'f'];   // Needs to be replaces
     // Retrieve Parent node details
     let tmp;
