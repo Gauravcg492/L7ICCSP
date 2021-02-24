@@ -99,7 +99,7 @@ export class GoogleAccessCloud implements AccessCloud {
             parents: folderIds
         };
         var media = {
-            mimeType: 'image/jpeg',
+            // mimeType: 'image/jpeg',
             body: fs.createReadStream(filePath)
         };
         try {
