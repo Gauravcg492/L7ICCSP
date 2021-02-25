@@ -16,8 +16,7 @@ export function sha256(File : string){
 // Returns False in all other cases
 function compare2Strings(s1 : string,s2 : string){
     let len = 64;
-    let i = 0;
-    while (i < len){
+    for (let i = 0; i < len; i++){
         if ((s1[i].charCodeAt(0) - s2[i].charCodeAt(0)) > 0){
             return true;
         }
