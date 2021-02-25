@@ -3,6 +3,7 @@ import { concat } from './hashes';
 import { AccessCloud } from '../cloud/access_cloud';
 import { constants } from './constants';
 
+
 function chooseNode(searchArray: string[], hashFile: string): string {
     for(let index = 0; index < searchArray.length; index++) {
         if(parseNode(searchArray[index])[0] === hashFile) {
@@ -22,16 +23,20 @@ export async function verify(hashFile: string, rootHash: string, cloudClient: Ac
     let tmp;
     let sibling;
     let curr_node = hashFile;
-
+    // TODO fix loop (performance optional)
     while (filename_arr[0] !== "" && filename_arr[0] !== filename_arr[1]) {
         // Call to drive-api : Search
-        tmp = parseNode((await cloudClient.searchFile(filename_arr[1], constants.TREEDIR))[0]);
+        tmp = parseNode(chooseNode(await cloudClient.searchFile(filename_arr[1], constants.TREEDIR), filename_arr[1]));
         sibling = tmp[3];
-        if (tmp[2] != hashFile) {
+        if(tmp[3] !== curr_node && tmp[2] !== curr_node) {
+            return false;
+        }
+        if (tmp[2] != curr_node) {
             sibling = tmp[2];
         }
         curr_node = concat(curr_node, sibling);
-        filename_arr = parseNode((await cloudClient.searchFile(tmp[1], constants.TREEDIR))[0]);
+        filename_arr = tmp;
+        // filename_arr = parseNode(chooseNode(await cloudClient.searchFile(tmp[1], constants.TREEDIR), tmp[1]));
     }
     // compare curr_node with local root
     // curr_node contains computed root hash 
