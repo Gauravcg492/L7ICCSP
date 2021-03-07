@@ -53,9 +53,9 @@ const main = async () => {
     const storage: AccessStorage = new LocalAccessStorage();
     const operations = new CloudOperations(access_cloud, tester, storage);
     // await operations.setUser();
-    // await operations.upload('index.html', false, constants.ROOTDIR);
+    // await operations.upload('tsconfig.json', false, constants.ROOTDIR);
     // console.log('Upload done');
-    operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "config.json");
+    operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "tsconfig.json");
 }
 
 main();
