@@ -133,7 +133,7 @@ export class MerkleTree implements Tree {
     }
 
     private getOtherChild(parent: Node, child: Node): Node {
-        if (child.childPosition) {
+        if (!child.childPosition) {
             return this.rightChild[parent.hash];
         } else {
             return this.leftChild[parent.hash];
@@ -147,6 +147,7 @@ export class MerkleTree implements Tree {
         } else {
             this.rightChild[parent.hash] = child;
         }
+        this.childParentMap[child.hash] = parent.hash;
     }
 
     private clearOldHashInfo(hash: string): void {
@@ -156,6 +157,12 @@ export class MerkleTree implements Tree {
 
     private shiftHashToNode(oldHash: string, newHash: string): void {
         this.hashToNode[newHash] = this.hashToNode[oldHash];
+        if(this.childParentMap[oldHash] === oldHash) {
+            this.childParentMap[newHash] = newHash;
+        } else {
+            this.childParentMap[newHash] = this.childParentMap[oldHash];
+        }
+        delete this.childParentMap[oldHash];
         delete this.hashToNode[oldHash];
     }
 
@@ -221,15 +228,15 @@ export class MerkleTree implements Tree {
             // Set relative positions of sibling and newnode with respect to new parent
             sibling.childPosition = sibling.childPosition ?? 0;
             newNode.childPosition = sibling.childPosition ^ 1;
-            // Define relation between all three nodes
-            this.updateChildInfo(newParent, sibling);
-            this.updateChildInfo(newParent, newNode);
-
+            
             // parent will take sibling relative position w.r.t to it's old parent
             newParent.childPosition = sibling.childPosition;
             // Fetch sibling's old parent
             const siblingParent = this.getNode(this.childParentMap[sibling.hash]);
-
+            
+            // Define relation between all three nodes
+            this.updateChildInfo(newParent, sibling);
+            this.updateChildInfo(newParent, newNode);
             // Now sibling's parent can be modified to new parent along with new node
             console.log("new ",newNode);
             console.log("par ",newParent);
@@ -248,8 +255,9 @@ export class MerkleTree implements Tree {
                 // parent of root is root
                 while (parent.hash != child1.hash) {
                     // fetch parent's other sibling (if parent exists, then it will always have two children)
+                    console.log("Child position: ", child1.childPosition);
                     let child2 = this.getOtherChild(parent, child1);
-
+                    console.log("Child 2: ", child2);
                     // sibling's old parent's child info will change
                     this.hashesToEdit[this.nodeToHash(parent)] = parent;
                     // hash of parent will change so clear old hash garbage
@@ -261,6 +269,9 @@ export class MerkleTree implements Tree {
                     this.shiftHashToNode(oldHash, parent.hash);
                     // update child1's current position from its sibling i.e., child 2
                     child1.currentPosition = child2.currentPosition;
+                    // update the parents current & real position
+                    parent.currentPosition = Math.max(child1.currentPosition ?? 1, child2.currentPosition ?? 1) + 1;
+                    parent.realPosition = Math.min(child1.realPosition ?? 1, child2.realPosition ?? 1) + 1
                     // Once parent's hash is updated update the new hashes child info
                     this.updateChildInfo(parent, child1);
                     this.updateChildInfo(parent, child2);
