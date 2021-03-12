@@ -10,7 +10,8 @@
     "start": "npm run build-tsc && electron .",
     "test1": "tsc && node build/main/code/cli.js",
     "dist": "electron-builder",
-    "temp": "tsc && node build/main/code/utils/hashes.js"
+    "temp": "tsc && node build/main/code/utils/nodeParser.js",
+    "hashTest": "tsc && node build/main/code/utils/hashes.js"
   },
   "keywords": [],
   "author": "PW21HBP02",

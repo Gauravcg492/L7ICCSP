@@ -1,20 +1,34 @@
 import { AccessCloud } from "./access_cloud";
-import fs, { promises } from 'fs';
+import fs from 'fs';
+import { constants } from '../utils/constants';
 
 
 export class GoogleAccessCloud implements AccessCloud {
     private drive: any;
     private fileNameToId: { [key: string]: string };
+
+    private ROOTDIR = constants.ROOTDIR;
+    private TREEDIR = constants.TREEDIR;
+
     constructor(drive: any) {
         // Load client secrets from a local file.
         this.drive = drive;
         this.fileNameToId = {};
     }
 
-    async getDirList(): Promise<string[]> {
+    private getFolderId(foldername: string): string {
+        return this.fileNameToId[foldername] ?? "";
+    }
+
+    async getDirList(this: GoogleAccessCloud, dir = this.ROOTDIR): Promise<string[]> {
+        const fileNames: string[] = [];
         try {
+            let queryString = "";
+            if (dir !== "") {
+                queryString = `'${this.getFolderId(dir)}' in parents`;
+            }
             const res = await this.drive.files.list({
-                pageSize: 10,
+                q: queryString,
                 fields: 'nextPageToken, files(id, name)',
             });
             if (res) {
@@ -24,6 +38,7 @@ export class GoogleAccessCloud implements AccessCloud {
                     files.map((file: any) => {
                         console.log(`${file.name} (${file.id})`);
                         this.fileNameToId[file.name] = file.id;
+                        fileNames.push(file.name);
                     });
                 } else {
                     console.log("No files found");
@@ -35,12 +50,12 @@ export class GoogleAccessCloud implements AccessCloud {
         } catch (err) {
             console.log(err);
         }
-        return Object.keys(this.fileNameToId);
+        return fileNames;
     }
 
-    async getFile(dir: string, filename: string, callback: Function): Promise<void> {
+    async getFile(this: GoogleAccessCloud, dir: string, filename: string, callback: Function): Promise<void> {
         const fileId = this.fileNameToId[filename];
-        let dest = fs.createWriteStream(dir + filename); // file path where google drive function will save the file
+        let dest = fs.createWriteStream(dir + '/' + filename); // file path where google drive function will save the file
 
         let progress = 0; // This will contain the download progress amount
 
@@ -51,7 +66,7 @@ export class GoogleAccessCloud implements AccessCloud {
                 driveResponse.data
                     .on('end', () => {
                         console.log("Download Complete");
-                        callback(dir + filename);
+                        callback(dir + '/' + filename);
                     })
                     .on('error', (err: any) => {
                         console.error('Error downloading file.');
@@ -70,55 +85,72 @@ export class GoogleAccessCloud implements AccessCloud {
             .catch((err: any) => console.log(err));
     }
 
-    putFile(filePath: string): void {
+    async putFile(this: GoogleAccessCloud, filePath: string, dir: string): Promise<void> {
+        console.log("Upload called")
+        const folderIds = [];
+        const folderId = this.getFolderId(dir);
+        if (folderId.length > 0) {
+            folderIds.push(folderId);
+        }
         const fileArray = filePath.split('/');
         const filename = fileArray[fileArray.length - 1];
         var fileMetadata = {
-            'name': filename
+            'name': filename,
+            parents: folderIds
         };
         var media = {
-            mimeType: 'image/jpeg',
+            // mimeType: 'image/jpeg',
             body: fs.createReadStream(filePath)
         };
-        this.drive.files.create({
-            resource: fileMetadata,
-            media: media,
-            fields: 'id'
-        }, function (err: any, res: any) {
-            if (err) {
-                // Handle error
-                console.log(err);
-            } else {
-                console.log("--- Upload successful ---");
+        try {
+            const res = await this.drive.files.create({
+                resource: fileMetadata,
+                media: media,
+                fields: 'id'
+            });
+            if(res) {
                 console.log('File Id: ', res.data.id);
+                this.fileNameToId[filename] = res.data.id;
+                console.log("ID", this.fileNameToId[filename]);
+            } else{
+                console.log("Upload failed");
             }
-        });
+        } catch (error) {
+            console.log(error);
+        }
 
     }
 
-    renameFile(oldFileName: string, newFileName: string): void {
+    renameFile(this: GoogleAccessCloud, oldFileName: string, newFileName: string): void {
+        console.log("Rename Called")
         const fileId = this.fileNameToId[oldFileName];
-        var body = { 'name': newFileName };
+        console.log("Inside rename fileid: ", fileId);
+        const body = { 'name': newFileName };
         this.drive.files.update({
             fileId: fileId,
             resource: body,
         }, (err: any, res: any) => {
-            if (err) return console.log('The API returned an error: ' + err);
+            if (err) console.log('The API returned an error: ' + err);
             else {
                 console.log('The name of the file has been updated!');
             }
         });
     }
 
-    async searchFile(filePrefix: string): Promise<string[]> {
-        const queryString = "name contains '"+ filePrefix +"'";
+    async searchFile(this: GoogleAccessCloud, filePrefix: string, dir = this.TREEDIR): Promise<string[]> {
+        const queryString1 = `name contains '${filePrefix}' `
+        let queryString2 = "";
+        if (dir !== "" && this.getFolderId(dir) !== "") {
+            queryString2 = `and '${this.getFolderId(dir)}' in parents`;
+        }
+        const queryString = queryString1 + queryString2;
         console.log("query string: ", queryString);
         var pageToken = null;
-        const filenames:string[] = [];
-        try{
+        const filenames: string[] = [];
+        try {
             const res = await this.drive.files.list({
                 q: queryString,
-                fields: 'nextPageToken, files(name)',
+                fields: 'nextPageToken, files(id,name)',
                 spaces: 'drive',
                 pageToken: pageToken,
             });
@@ -126,16 +158,42 @@ export class GoogleAccessCloud implements AccessCloud {
             if (files.length) {
                 console.log('Files:', files, '\n');
                 files.map((file: any) => {
-                    filenames.push(file['name']);
+                    this.fileNameToId[file.name] = file.id;
+                    filenames.push(file.name);
                 });
             } else {
                 console.log('No files found.');
             }
-        } catch(err) {
-            console.log(err);
+        } catch (err) {
+            console.log(err.response.status);
         }
         return filenames;
     }
+
+    async putFolder(this: GoogleAccessCloud, folderName: string, dir: string): Promise<void> {
+        const folderIds = [];
+        const folderId = this.getFolderId(dir);
+        if (folderId.length > 0) {
+            folderIds.push(folderId);
+        }
+        var fileMetadata = {
+            'name': folderName,
+            'mimeType': 'application/vnd.google-apps.folder',
+            parents: folderIds
+        };
+        try {
+            const file = await this.drive.files.create({
+                resource: fileMetadata,
+                fields: 'id'
+            });
+            if (file) {
+                this.fileNameToId[folderName] = file.data.id;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
 }
 
 // const accessCloud = new GoogleAccessCloud();

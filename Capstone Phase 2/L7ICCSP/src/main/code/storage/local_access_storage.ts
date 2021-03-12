@@ -2,7 +2,7 @@ import { AccessStorage, ConfigInput, HashInput } from "./access_storage";
 import jsonfile from "jsonfile";
 
 // Implements AccessStorage Interface to access root hash in local file system
-class LocalAccessStorage implements AccessStorage {
+export class LocalAccessStorage implements AccessStorage {
     // Function handles fetching of root hash from local file system
     // Returns root hash if found else returns empty string
     getRootHash(obj: ConfigInput): string {

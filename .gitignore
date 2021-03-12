@@ -7,3 +7,5 @@ package-lock.json
 credentials.json
 token.json
 yarn.lock
+details.json
+temp/
