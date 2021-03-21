@@ -21,28 +21,20 @@ export class LocalAccessStorage implements AccessStorage {
 
     // Function which adds root hash onto local file system 
     putRootHash(obj: ConfigInput & HashInput): void {
+        let details:any = {};
+        let file = "";
         try {
             const conf = jsonfile.readFileSync(obj.configPath);
-            const file = conf.rootHash.directory + conf.rootHash.filename;
-            jsonfile
-                .readFile(file)
-                .then((details) => {
-                    details[obj.id] = {
-                        hash: obj.hash,
-                    };
-                    jsonfile.writeFileSync(file, details);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    const newObj: any = {};
-                    newObj[obj.id] = {
-                        hash: obj.hash,
-                    };
-                    jsonfile.writeFileSync(file, newObj);
-                });
+            file = conf.rootHash.directory + conf.rootHash.filename;
+            details = jsonfile.readFileSync(file);
         } catch (error) {
+            console.log("putRootHash() error");
             console.log(error);
         }
+        details[obj.id] = {
+            hash: obj.hash,
+        };
+        jsonfile.writeFileSync(file, details);
     }
 }
 
@@ -50,10 +42,10 @@ export class LocalAccessStorage implements AccessStorage {
 // const some = new LocalAccessStorage();
 // const obj = {
 //     id: "id",
-//     hash: "hash",
+//     hash: "hash2",
 //     configPath: "config.json",
 // };
-// // some.putRootHash(obj);
+// some.putRootHash(obj);
 // const output = some.getRootHash({
 //     id: "id2",
 //     "configPath": 'config.json'

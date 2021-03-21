@@ -20,6 +20,7 @@ export class CloudOperations {
 
     public async setUser(): Promise<void> {
         this.id = await this.authentication.getUserId();
+        console.log("id: ", this.id);
     }
 
     private async verify(filehash: string): Promise<boolean> {
@@ -30,12 +31,13 @@ export class CloudOperations {
         return await verify(filehash, rootHash, this.cloudClient);
     }
 
-    async upload(file: string, isFolder = false, dir: string): Promise<void> {
+    async upload(file: string, isFolder = false, dir: string): Promise<boolean> {
         console.log("upload called");
+        const promises = [];
         if ( isFolder ) {
-            this.cloudClient.putFolder(file, dir);
+            promises.push(this.cloudClient.putFolder(file, dir));
         } else {
-            this.cloudClient.putFile(file, dir);
+            promises.push(this.cloudClient.putFile(file, dir));
         }
         const obj: any = {
             id: this.id,
@@ -46,24 +48,38 @@ export class CloudOperations {
         console.log("RootHash");
         const merkleTree: Tree = new MerkleTree(rootHash, this.cloudClient);
         const fileHash = sha256(file);
-        obj.hash = await merkleTree.addToTree(fileHash);
-        this.storage.putRootHash(obj);
+        try{
+            obj.hash = await merkleTree.addToTree(fileHash);
+            this.storage.putRootHash(obj);
+            const values = await Promise.all(promises);
+            return values.every(Boolean);
+        } catch(err) {
+            console.log("CloudOperations.upload() error");
+            console.log(err);
+        }
+        return false;
     }
-    download(localDir: string, filename: string): any {
+
+    async download(localDir: string, filename: string): Promise<boolean> {
         console.log("Starting Download");
-        this.cloudClient.getFile(localDir, filename, (filePath: string) => {
-            const fileHash = sha256(filePath);
-            this.verify(fileHash).then((isAuthentic: boolean) => {
+        try{
+            const result = await this.cloudClient.getFile(localDir, filename);
+            if(result.length > 0) {
+                const fileHash = sha256(result);
+                const isAuthentic = await this.verify(fileHash);
                 if(isAuthentic) {
                     console.log("File is Authentic");
                 } else{
                     console.log("File is tampered");
                     // TODO delete file
-                    fs.unlink(filePath, ()=>{
-                        console.log("Deleted the file");
-                    });
+                    fs.unlinkSync(result);
                 }
-            });
-        });
+                return true;
+            }
+        } catch(err) {
+            console.log("CloudOperations.download() error");
+            console.log(err);
+        }
+        return false;
     }
 }

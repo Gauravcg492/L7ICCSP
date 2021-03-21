@@ -73,20 +73,16 @@ export class MerkleTree implements Tree {
             if (!this.isNodeComplete(childNode)) {
                 childNode.currentPosition = parseInt(hashArr[4]);
                 childNode.realPosition = parseInt(hashArr[5]);
-                this.hashToNode[hashArr[0]] = childNode;
-
+                // this.hashToNode[hashArr[0]] = childNode;
                 this.childParentMap[hashArr[0]] = hashArr[1];
 
-                if (hashArr[2].length > 1) {
-                    const leftNode = this.getNode(hashArr[2]);
-                    leftNode.childPosition = 0;
-                    this.leftChild[hashArr[0]] = leftNode;
-                }
-                if (hashArr[3].length > 2) {
-                    const rightNode = this.getNode(hashArr[3]);
-                    rightNode.childPosition = 1;
-                    this.rightChild[hashArr[0]] = rightNode;
-                }
+                const leftNode = this.getNode(hashArr[2]);
+                leftNode.childPosition = 0;
+                this.leftChild[hashArr[0]] = leftNode;
+
+                const rightNode = this.getNode(hashArr[3]);
+                rightNode.childPosition = 1;
+                this.rightChild[hashArr[0]] = rightNode;
             }
 
         }
@@ -98,7 +94,7 @@ export class MerkleTree implements Tree {
         let hashes = await this.cloudClient.searchFile(hash, this.TREEDIR);
         // let hashes = ["ab,ab,a,b,2,2", "a,ab,0,0,1,1", "b,ab,0,0,1,1"]
         // No root hash found in server (create new one)
-        console.log("GetNodeTreeTop: Hashes = ",hashes);
+        console.log("GetNodeTreeTop: Hashes = ", hashes);
         if (hashes.length === 0) {
             return this.getNode("");
         }
@@ -156,31 +152,59 @@ export class MerkleTree implements Tree {
     }
 
     private shiftHashToNode(oldHash: string, newHash: string): void {
-        this.hashToNode[newHash] = this.hashToNode[oldHash];
-        if(this.childParentMap[oldHash] === oldHash) {
+        // this.hashToNode[newHash] = this.hashToNode[oldHash];
+        // this.hashToNode[newHash] = this.getNode(newHash);
+        if (this.childParentMap[oldHash] === oldHash) {
             this.childParentMap[newHash] = newHash;
         } else {
             this.childParentMap[newHash] = this.childParentMap[oldHash];
         }
-        delete this.childParentMap[oldHash];
-        delete this.hashToNode[oldHash];
+        // delete this.childParentMap[oldHash];
+        // delete this.hashToNode[oldHash];
     }
 
-    private updateMerkle(this: MerkleTree) {
+    private async putAndRename(temp: string, tempName: string, node: Node): Promise<boolean> {
+        try{
+            const result = await this.cloudClient.putFile(temp, this.TREEDIR);
+            if (result) {
+                console.log("rename calling");
+                const rename  = await this.cloudClient.renameFile(tempName, this.nodeToHash(node));
+                if(!rename){
+                    throw new Error("Rename failed");
+                }
+            } else {
+                throw new Error("Upload failed");
+            }
+            return true;
+        } catch(err) {
+            console.log("putAndRename() error");
+            console.log(err);
+        }
+        return false;
+    }
+
+    private async updateMerkle(this: MerkleTree) {
+        const promises = [];
+
         this.hashesToAdd.forEach(node => {
             console.log("Adding node");
             const tempDir = "./temp/";
             const tempName = "merkleFile";
             const temp = tempDir + tempName;
             fs.closeSync(fs.openSync(temp, 'w'));
-            this.cloudClient.putFile(temp, this.TREEDIR).then(() => {
-                console.log("rename calling");
-                this.cloudClient.renameFile(tempName, this.nodeToHash(node));
-            });
+            promises.push(this.putAndRename(temp, tempName, node));
         });
-        for(let hash in this.hashesToEdit) {
-            this.cloudClient.renameFile(hash, this.nodeToHash(this.hashesToEdit[hash]));
+        for (let hash in this.hashesToEdit) {
+            promises.push(this.cloudClient.renameFile(hash, this.nodeToHash(this.hashesToEdit[hash])));
         }
+        try {
+            const values = await Promise.all(promises);
+            return values.every(Boolean);
+        } catch (err) {
+            console.log("updateMerkle() error");
+            console.log(err);
+        }
+        return false;
     }
 
     async addToTree(this: MerkleTree, fileHash: string): Promise<string> {
@@ -191,8 +215,11 @@ export class MerkleTree implements Tree {
         // When there is no tree
         if (this.rootNode.hash === "") {
             newNode.currentPosition = this.LEAF;
-            this.updateMerkle();
-            return fileHash;
+            const result  = await this.updateMerkle();
+            if(result) {
+                return fileHash;
+            }
+            return "";
         }
 
         // if there are nodes
@@ -228,19 +255,19 @@ export class MerkleTree implements Tree {
             // Set relative positions of sibling and newnode with respect to new parent
             sibling.childPosition = sibling.childPosition ?? 0;
             newNode.childPosition = sibling.childPosition ^ 1;
-            
+
             // parent will take sibling relative position w.r.t to it's old parent
             newParent.childPosition = sibling.childPosition;
             // Fetch sibling's old parent
             const siblingParent = this.getNode(this.childParentMap[sibling.hash]);
-            
+
             // Define relation between all three nodes
             this.updateChildInfo(newParent, sibling);
             this.updateChildInfo(newParent, newNode);
             // Now sibling's parent can be modified to new parent along with new node
-            console.log("new ",newNode);
-            console.log("par ",newParent);
-            console.log("sib ",sibling);
+            console.log("new ", newNode);
+            console.log("par ", newParent);
+            console.log("sib ", sibling);
             console.log("sibparent ", siblingParent);
             this.childParentMap[newNode.hash] = newParent.hash;
             this.childParentMap[sibling.hash] = newParent.hash;
@@ -258,38 +285,45 @@ export class MerkleTree implements Tree {
                     console.log("Child position: ", child1.childPosition);
                     let child2 = this.getOtherChild(parent, child1);
                     console.log("Child 2: ", child2);
+                    // sibling's parent info will be changed
+                    this.hashesToEdit[this.nodeToHash(child2)] = child2;
                     // sibling's old parent's child info will change
-                    this.hashesToEdit[this.nodeToHash(parent)] = parent;
+                    const nParent = this.getNode(concat(child1.hash, child2.hash));
+                    this.hashesToEdit[this.nodeToHash(parent)] = nParent;
+                    nParent.childPosition = parent.childPosition;
                     // hash of parent will change so clear old hash garbage
-                    this.clearOldHashInfo(parent.hash);
-                    const oldHash = parent.hash;
+                    // this.clearOldHashInfo(parent.hash);
 
-                    parent.hash = concat(child1.hash, child2.hash);
                     // update hash to node relation so that new parent hash can map to it's node
-                    this.shiftHashToNode(oldHash, parent.hash);
+                    this.shiftHashToNode(parent.hash, nParent.hash);
                     // update child1's current position from its sibling i.e., child 2
                     child1.currentPosition = child2.currentPosition;
                     // update the parents current & real position
-                    parent.currentPosition = Math.max(child1.currentPosition ?? 1, child2.currentPosition ?? 1) + 1;
-                    parent.realPosition = Math.min(child1.realPosition ?? 1, child2.realPosition ?? 1) + 1
+                    nParent.currentPosition = Math.max(child1.currentPosition ?? 1, child2.currentPosition ?? 1) + 1;
+                    nParent.realPosition = Math.min(child1.realPosition ?? 1, child2.realPosition ?? 1) + 1
                     // Once parent's hash is updated update the new hashes child info
-                    this.updateChildInfo(parent, child1);
-                    this.updateChildInfo(parent, child2);
+                    this.updateChildInfo(nParent, child1);
+                    this.updateChildInfo(nParent, child2);
                     // traverse up
-                    child1 = parent;
-                    parent = this.getNode(this.childParentMap[parent.hash]);
+                    child1 = nParent;
+                    parent = this.getNode(this.childParentMap[nParent.hash]);
                 }
-                this.updateMerkle();
-                return child1.hash;
+                const result  = await this.updateMerkle();
+                if(result) {
+                    return child1.hash;
+                }
+                return "";
             } else {
                 // no parent so new parent becomes root
                 this.childParentMap[newParent.hash] = newParent.hash;
                 newParent.currentPosition = Math.max(sibling.currentPosition ?? 1, newNode.currentPosition ?? 1) + 1;
-                this.updateMerkle();
-                return newParent.hash
+                const result  = await this.updateMerkle();
+                if(result) {
+                    return newParent.hash
+                }
+                return "";
             }
         }
-
         return "";
     }
 

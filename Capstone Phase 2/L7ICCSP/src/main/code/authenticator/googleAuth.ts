@@ -3,7 +3,7 @@ import fs from 'fs';
 import { google } from 'googleapis';
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/drive'];
+const SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/userinfo.profile'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
@@ -46,10 +46,10 @@ export class GoogleAuth implements Authentication {
         // Load client secrets from a local file.
         try {
             const credentials = JSON.parse(fs.readFileSync('credentials.json') as unknown as string);
-            console.log("credentials");
+            // console.log("credentials");
             // Authorize a client with credentials, then call the Google Drive API.
             const { client_secret, client_id, redirect_uris } = credentials.installed;
-            console.log("cred");
+            // console.log("cred");
             this.oAuth2Client = new google.auth.OAuth2(
                 client_id, client_secret, redirect_uris[0]);
 
@@ -62,6 +62,7 @@ export class GoogleAuth implements Authentication {
             this.oAuth2Client.setCredentials(JSON.parse(this.token as unknown as string));
             this.setDrive(this.oAuth2Client);
         } catch (err) {
+            console.log("authorize() Error");
             console.log(err);
         }
     }
@@ -73,13 +74,15 @@ export class GoogleAuth implements Authentication {
      * @param {getEventsCallback} callback The callback for the authorized client.
      */
     public async getAccessToken(code: string): Promise<void> {
-        this.token = await this.oAuth2Client.getToken(code);
-        this.oAuth2Client.setCredentials(this.token['tokens']);
-        this.setDrive(this.oAuth2Client);
-        fs.writeFile(TOKEN_PATH, JSON.stringify(this.token['tokens']), (err: any) => {
-            if (err) return console.error(err);
-            console.log('Token stored to', TOKEN_PATH);
-        });
+        try{
+            this.token = await this.oAuth2Client.getToken(code);
+            this.oAuth2Client.setCredentials(this.token['tokens']);
+            this.setDrive(this.oAuth2Client);
+            fs.writeFileSync(TOKEN_PATH, JSON.stringify(this.token['tokens']));
+        } catch(err) {
+            console.log("getAccessToken() Error");
+            console.log(err);
+        }
     }
 
     public async getUserId(): Promise<string> {
