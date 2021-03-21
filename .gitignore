@@ -9,3 +9,5 @@ token.json
 yarn.lock
 details.json
 temp/
+count.json
+.idea
