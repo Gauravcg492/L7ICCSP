@@ -11,6 +11,7 @@
     "test1": "tsc && node build/main/code/cli.js",
     "dist": "electron-builder",
     "temp": "tsc && node build/main/code/utils/nodeParser.js",
+    "watch": "webpack --config webpack.common.js --watch",
     "hashTest": "tsc && node build/main/code/utils/hashes.js"
   },
   "keywords": [],

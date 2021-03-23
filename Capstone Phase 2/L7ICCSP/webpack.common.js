@@ -3,7 +3,7 @@ const ForkTsCheckerWebpackPlugin = require( 'fork-ts-checker-webpack-plugin' );
 
 module.exports = {
   mode: "development",
-  entry: "./src/render/app.tsx",
+  entry: "./src/render/index.js",
   devtool: "source-map",
   target: "electron-renderer",
   module: {
