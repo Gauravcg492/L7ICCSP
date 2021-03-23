@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import FileView from './FileView';
+// import FileView from './FileView';
 import FileInfoComponent from './listOfFiles';
 
 
@@ -15,6 +15,10 @@ class App extends Component {
   }
   showUploads() {
     console.log('Click happened');
+    window.electron.filesApi.fetchFiles('upload');
+    window.electron.filesApi.getFiles().then((fileObj) => {
+      console.log(fileObj);
+    }).catch((err) => console.log(err));
   }
   render() {
     return  <div>
