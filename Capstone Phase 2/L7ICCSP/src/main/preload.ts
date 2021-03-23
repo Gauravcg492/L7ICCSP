@@ -1,8 +1,8 @@
-const { ipcRenderer, contextBridge } = require('electron');
+import { ipcRenderer, contextBridge } from 'electron';
 
-contextBridge.exposeInMainWorld('electron', {
+contextBridge.exposeInMainWorld('api', {
   notificationApi: {
-    sendNotification(message) {
+    sendNotification(message: string) {
       ipcRenderer.send('notify', message);
     }
   },
@@ -10,12 +10,12 @@ contextBridge.exposeInMainWorld('electron', {
 
   },
   filesApi: {
-    fetchFiles(source) {
+    fetchFiles(source:string) {
         ipcRenderer.send('files', source);
     },
     getFiles() {
         return new Promise((resolve, _) => {
-            ipcRenderer.on('list', (_, fileObj) => {
+            ipcRenderer.on('list', (_:any, fileObj: {}) => {
                 resolve(fileObj);
             });
         });

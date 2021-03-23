@@ -15,8 +15,8 @@ class App extends Component {
   }
   showUploads() {
     console.log('Click happened');
-    window.electron.filesApi.fetchFiles('upload');
-    window.electron.filesApi.getFiles().then((fileObj) => {
+    window.api.filesApi.fetchFiles('upload');
+    window.api.filesApi.getFiles().then((fileObj) => {
       console.log(fileObj);
     }).catch((err) => console.log(err));
   }
