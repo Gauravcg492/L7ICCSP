@@ -38,7 +38,7 @@ export class GoogleAccessCloud implements AccessCloud {
                     files.map((file: any) => {
                         console.log(`${file.name} (${file.id})`);
                         this.fileNameToId[file.name] = file.id;
-                        fileNames.push(file.name);
+                        fileNames.push(file.name + ',' + file.id);
                     });
                 } else {
                     console.log("No files found");
