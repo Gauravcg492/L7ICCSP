@@ -193,7 +193,7 @@ export class GoogleAccessCloud implements AccessCloud {
                 console.log('No files found.');
             }
         } catch (err) {
-            console.log(err.response.status);
+            console.log(err);
         }
         return filenames;
     }
