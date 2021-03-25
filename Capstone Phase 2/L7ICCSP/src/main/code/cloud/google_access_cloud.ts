@@ -15,9 +15,13 @@ export class GoogleAccessCloud implements AccessCloud {
         this.drive = drive;
         this.fileNameToId = {};
     }
-
+    
     private getFolderId(foldername: string): string {
         return this.fileNameToId[foldername] ?? "";
+    }
+    
+    fileNamesToID(this: GoogleAccessCloud, filename: string): string {
+        return this.fileNameToId[filename];
     }
 
     async getDirList(this: GoogleAccessCloud, dir = this.ROOTDIR): Promise<string[]> {
@@ -53,40 +57,39 @@ export class GoogleAccessCloud implements AccessCloud {
         return fileNames;
     }
 
-    async getFile(this: GoogleAccessCloud, dir: string, filename: string): Promise<string> {
-        const fileId = this.fileNameToId[filename];
-        let dest = fs.createWriteStream(dir + '/' + filename); // file path where google drive function will save the file
+    async getFile(this: GoogleAccessCloud, dir: string, fileId: string): Promise<string> {
+        let dest = fs.createWriteStream(dir + '/' + fileId); // file path where google drive function will save the file
 
         let progress = 0; // This will contain the download progress amount
         const promises = [];
         // Uploading Single image to drive
         const download = new Promise((resolve: (value: string) => void, reject) => {
             this.drive.files
-            .get({ fileId, alt: 'media' }, { responseType: 'stream' })
-            .then((driveResponse: any) => {
-                driveResponse.data
-                    .on('end', () => {
-                        console.log("Download Complete");
-                        resolve(dir + '/' + filename);
-                    })
-                    .on('error', (err: any) => {
-                        throw new Error('Error downloading file.');
-                    })
-                    .on('data', (d: any) => {
-                        progress += d.length;
-                        if (process.stdout.isTTY) {
-                            process.stdout.clearLine(0);
-                            process.stdout.cursorTo(0);
-                            process.stdout.write(`Downloaded ${progress} bytes`);
-                        }
+                .get({ fileId, alt: 'media' }, { responseType: 'stream' })
+                .then((driveResponse: any) => {
+                    driveResponse.data
+                        .on('end', () => {
+                            console.log("Download Complete");
+                            resolve(dir + '/' + fileId);
+                        })
+                        .on('error', (err: any) => {
+                            throw new Error('Error downloading file.');
+                        })
+                        .on('data', (d: any) => {
+                            progress += d.length;
+                            if (process.stdout.isTTY) {
+                                process.stdout.clearLine(0);
+                                process.stdout.cursorTo(0);
+                                process.stdout.write(`Downloaded ${progress} bytes`);
+                            }
 
-                    })
-                    .pipe(dest);
-            })
-            .catch((err: any) => {
-                console.log(err);
-                reject(err)
-            });
+                        })
+                        .pipe(dest);
+                })
+                .catch((err: any) => {
+                    console.log(err);
+                    reject(err)
+                });
         });
         promises.push(download);
         try {
