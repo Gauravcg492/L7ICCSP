@@ -59,9 +59,13 @@ const main = async () => {
     // await operations.upload('token.json', false, constants.ROOTDIR);
     // await operations.upload('tsconfig.json', false, constants.ROOTDIR);
     // await operations.upload('yarn.lock', false, constants.ROOTDIR);
-    // await operations.upload('webpack.common.js', false, constants.ROOTDIR);
-    // console.log('Upload done');
-    operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "config.json");
+    // await operations.upload('count.json', false, constants.ROOTDIR);
+    await operations.upload('webpack.common.js', false, constants.ROOTDIR);
+    console.log('Upload done');
+    // const fileId = access_cloud.getFileId('count.json');
+    const fileId = access_cloud.getFileId('webpack.common.js');
+    // operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "count.json", fileId);
+    operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "webpack.common.js", fileId);
 }
 
 main();

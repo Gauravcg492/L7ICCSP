@@ -20,7 +20,7 @@ export class GoogleAccessCloud implements AccessCloud {
         return this.fileNameToId[foldername] ?? "";
     }
     
-    fileNamesToID(this: GoogleAccessCloud, filename: string): string {
+    getFileId(this: GoogleAccessCloud, filename: string): string {
         return this.fileNameToId[filename];
     }
 
