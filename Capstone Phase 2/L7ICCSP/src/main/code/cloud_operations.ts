@@ -19,11 +19,19 @@ export class CloudOperations {
         this.configPath = constants.CONFIG_PATH;
     }
 
+    /**
+     * Sets the user id
+     */
     public async setUser(): Promise<void> {
         this.id = await this.authentication.getUserId();
         console.log("id: ", this.id);
     }
 
+    /**
+     * 
+     * @param filehash Hash of file
+     * @returns verify's the authenticity of the file and returns true if file is authentic
+     */
     private async verify(filehash: string): Promise<boolean> {
         const rootHash = this.storage.getRootHash({
             id: this.id,
@@ -32,6 +40,13 @@ export class CloudOperations {
         return await verify(filehash, rootHash, this.cloudClient);
     }
 
+    /**
+     * 
+     * @param file Name of File
+     * @param isFolder Boolean flag to indicate whether it is a folder or not
+     * @param dir Location of the file in local
+     * @returns 
+     */
     async upload(file: string, isFolder = false, dir: string): Promise<boolean> {
         console.log("upload called");
         const promises = [];
@@ -61,6 +76,12 @@ export class CloudOperations {
         return false;
     }
 
+    /**
+     * 
+     * @param localDir Local file directory : location to store downloads
+     * @param filename Name of 
+     * @returns 
+     */
     async download(localDir: string, filename: string, fileId: string): Promise<boolean> {
         console.log("Starting Download");
         try{
@@ -69,8 +90,11 @@ export class CloudOperations {
                 const fileHash = sha256(result);
                 const isAuthentic = await this.verify(fileHash);
                 if(isAuthentic) {
-                    if()
-                    fs.renameSync(`${localDir}/${fileId}`, `${localDir}/${filename}`);
+                    let filePath = `${localDir}/${filename}`;
+                    if(fs.existsSync(filePath)) {
+                        filePath = `${localDir}/${Date.now()}${filename}`;
+                    }
+                    fs.renameSync(`${localDir}/${fileId}`, filePath);
                     console.log("File is Authentic");
                 } else{
                     console.log("File is tampered");

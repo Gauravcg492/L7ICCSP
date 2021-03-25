@@ -84,7 +84,10 @@ export class GoogleAuth implements Authentication {
             console.log(err);
         }
     }
-
+    /**
+     * Get the user Id of the corresponding user
+     * @returns {userInfo.data.id} id of the user
+     */
     public async getUserId(): Promise<string> {
         try{
             const auth = google.oauth2({auth: this.oAuth2Client, version: 'v2'});
