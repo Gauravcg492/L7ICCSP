@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, ipcRenderer } from 'electron';
+import { app, BrowserWindow, ipcMain, ipcRenderer} from 'electron';
 import path from 'path';
 import { GoogleAuth } from "./code/authenticator/googleAuth";
 import readline from 'readline';
@@ -8,11 +8,14 @@ import { LocalAccessStorage } from './code/storage/local_access_storage';
 import { AccessStorage } from "./code/storage/access_storage";
 import { constants } from "./code/utils/constants";
 import jsonfile from "jsonfile";
+import { mainReloader, rendererReloader } from 'electron-hot-reload';
+
 
 import fs from 'fs';
 // TODO Create a singleton pattern class with createWindow and other methods enclosed in it to avoid using global variables
 let access_cloud: GoogleAccessCloud;
 let operations: CloudOperations;
+
 
 async function createWindow() {
 	// let tester = new GoogleAuth();
@@ -43,8 +46,8 @@ async function createWindow() {
 	// operations = new CloudOperations(access_cloud, tester, storage);
 	// console.log("Operations Set")
 	const win = new BrowserWindow({
-		width: 800,
-		height: 600,
+		width: 1200,
+		height: 800,
 		webPreferences: {
 			nodeIntegration: false,
 			contextIsolation: true,
@@ -117,3 +120,14 @@ app.on('activate', async () => {
 		createWindow();
 	}
 })
+
+const mainFile = path.join(app.getAppPath(), 'dist', 'main.js');
+const rendererFile = path.join(app.getAppPath(), 'dist', 'renderer.js');
+
+mainReloader(mainFile, undefined, (error, path) => {
+  console.log("It is a main's process hook!");
+});
+
+rendererReloader(rendererFile, undefined, (error, path) => {
+  console.log("It is a renderer's process hook!");
+});
