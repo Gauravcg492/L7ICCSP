@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 function UploadFile() {
 
+    console.log("in upload a file page");
     const [selectedFile, setSelectedFile] = useState(null);
 
     const onFileChange = event => {

@@ -1,7 +1,6 @@
 import React,{component} from 'react';
 
 function FileRowDownloads({fileName, path, fileId}){
-    console.log("in file rows",fileName, fileId)
     return(
         <tr key = {fileId}>
             <td>{fileName}</td>

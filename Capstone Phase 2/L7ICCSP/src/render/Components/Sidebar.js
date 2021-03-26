@@ -3,8 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faCloudDownloadAlt, faCloudUploadAlt, faCoffee, faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 
 function SideBar({ goToPage }) {
-    //console.log("go to page ",goToPage)
-    
+    console.log("sidebar function");
     return (
         <div className="sidenav">
             <div className="logo" style={{ padding: "20px" }}>

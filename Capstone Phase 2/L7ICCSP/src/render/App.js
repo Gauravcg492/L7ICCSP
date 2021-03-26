@@ -8,6 +8,24 @@ function App(){
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
+  const [dowloadedFiles, setDownloadedFiles] = useState([]);
+
+  const loadUploadsPage = () => {
+    console.log('fetching file-list from cloud');
+        window.api.filesApi.fetchFiles('upload');
+        window.api.filesApi.getFiles().then((fileObj) => {
+        setUploadedFiles(fileObj);
+        }).catch((err) => console.log(err));
+  }
+
+  const loadDownloadsPage = () => {
+    console.log('fetching file-list from downloads folder');
+    window.api.filesApi.fetchFiles('download');
+    window.api.filesApi.getFiles().then((fileObj) => {
+        setDownloadedFiles(fileObj)
+    }).catch((err) => console.log(err));
+  }
+
   const pageSetterWrapper = (toLoad) =>{
     console.log("request to load",toLoad)
     switch(toLoad){
