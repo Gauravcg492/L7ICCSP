@@ -100,6 +100,7 @@ export class CloudOperations {
                     console.log("File is tampered");
                     // TODO delete file
                     fs.unlinkSync(result);
+                    return false;
                 }
                 return true;
             }
