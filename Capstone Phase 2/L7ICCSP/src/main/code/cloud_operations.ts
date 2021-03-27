@@ -7,6 +7,7 @@ import { constants } from './utils/constants';
 import { Tree } from './tree/tree';
 import { MerkleTree } from './tree/merkle_tree';
 import fs from 'fs';
+import { dirname } from 'path';
 // Class which handles upload and download
 export class CloudOperations {
 
@@ -81,14 +82,19 @@ export class CloudOperations {
      * @param filename Name of 
      * @returns 
      */
-    async download(localDir: string, filename: string): Promise<boolean> {
+    async download(localDir: string, filename: string, fileId: string): Promise<boolean> {
         console.log("Starting Download");
         try{
-            const result = await this.cloudClient.getFile(localDir, filename);
+            const result = await this.cloudClient.getFile(localDir, fileId);
             if(result.length > 0) {
                 const fileHash = sha256(result);
                 const isAuthentic = await this.verify(fileHash);
                 if(isAuthentic) {
+                    let filePath = `${localDir}/${filename}`;
+                    if(fs.existsSync(filePath)) {
+                        filePath = `${localDir}/${Date.now()}${filename}`;
+                    }
+                    fs.renameSync(`${localDir}/${fileId}`, filePath);
                     console.log("File is Authentic");
                 } else{
                     console.log("File is tampered");
