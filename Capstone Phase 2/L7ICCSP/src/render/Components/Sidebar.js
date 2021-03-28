@@ -33,7 +33,7 @@ let displayFiles = () => {
 function Sidebar() {
   return (
     <div className='sidenav'>
-        <h1><p><i class="fa fa-exchange" aria-hidden="true"></i>   <b className='logo'>L7ICCSP</b></p></h1>
+        <h1><p><i className="fa fa-exchange" aria-hidden="true"></i>   <b className='logo'>L7ICCSP</b></p></h1>
         <List disablePadding dense>
           <ListItem button>
             <ListItemText>Upload File</ListItemText>
