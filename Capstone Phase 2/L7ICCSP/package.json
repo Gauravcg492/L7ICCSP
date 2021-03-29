@@ -46,7 +46,8 @@
     "googleapis": "^39.2.0",
     "jsonfile": "^6.1.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0"
   },
   "build": {
     "appId": "com.app.soft",

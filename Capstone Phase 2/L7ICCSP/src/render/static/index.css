@@ -5,6 +5,12 @@ body{
     background-color:whitesmoke;
 }
 
+
+#header {
+  position: absolute;
+  width: 220px;
+}
+
 .logo{
   color:greenyellow;font-family: "", "Courier New", monospace;
   font-size: 30px; 

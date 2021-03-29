@@ -6,9 +6,11 @@ import UploadButton from './components/UploadButton';
 
 class App extends Component {
   render() {
-    return  (<div>
-      <Sidebar/>
-      <ShowDownloads/>
+    return  (
+    <div id='header'>
+      <div>
+        <Sidebar/>
+      </div>
     </div>);
   }
 }
