@@ -1,21 +1,31 @@
-import React from 'react';
-import {HashRouter,Link,Route,Switch} from "react-router-dom";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import FileRowDownloads from './FileRowDownloads';
-import ShowUploads from './ShowUploads';
-import UploadButton from './UploadButton';
-import ShowDownloads from './ShowDownloads';
+import React from "react";
+import { HashRouter, Link, Route, Switch } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCloudDownloadAlt,
+  faCloudUploadAlt,
+  faPlusSquare,
+  faExchangeAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import FileRowDownloads from "./FileRowDownloads";
+import ShowUploads from "./ShowUploads";
+import UploadButton from "./UploadButton";
+import ShowDownloads from "./ShowDownloads";
 
-let onRequestForDownloadedFilesList = event => {
-    console.log('fetching file-list from downloads folder');
-    window.api.filesApi.fetchFiles('download');
-    window.api.filesApi.getFiles().then((fileObj) => {
-    this.setState({
-        downloadedFiles: fileObj
+let onRequestForDownloadedFilesList = (event) => {
+  console.log("fetching file-list from downloads folder");
+  window.api.filesApi.fetchFiles("download");
+  window.api.filesApi
+    .getFiles()
+    .then((fileObj) => {
+      this.setState({
+        downloadedFiles: fileObj,
+      });
     })
-    }).catch((err) => console.log(err));
+    .catch((err) => console.log(err));
 };
 
 // appendAFileToDownloadsList = (fileName, fileId) => {
@@ -27,63 +37,67 @@ let onRequestForDownloadedFilesList = event => {
 // };
 
 let displayFiles = () => {
-    if(this.state.downloadedFiles){
-        const fileTable = this.state.downloadedFiles.map(file => <FileRowDownloads fileName={file.name} fileId={file.id} path={""}/>)
-        return  <div>{fileTable}</div>;
-    }
+  if (this.state.downloadedFiles) {
+    const fileTable = this.state.downloadedFiles.map((file) => (
+      <FileRowDownloads fileName={file.name} fileId={file.id} path={""} />
+    ));
+    return <div>{fileTable}</div>;
+  }
 };
 
-const uploader = ()=>{
-  return(
-    <div>
-      <h1>Upload Files</h1>
-      <UploadButton/>
-    </div>
-  )
+const uploader = () => {
+  return <UploadButton />;
 };
 
-const uploaderFiles = ()=>{
-  return(
-    <div>
-      <h1>Uploaded Files</h1>
-      <ShowUploads/>
-    </div>
-  )
+const uploaderFiles = () => {
+  return <ShowUploads />;
 };
 
-const downloader = ()=>{
-  return(
-    <div>
-      <h1>Uploaded Files</h1>
-      <ShowDownloads/>
-    </div>
-  )
-}
+const downloader = () => {
+  return <ShowDownloads />;
+};
 
 function Sidebar() {
   return (
     <HashRouter>
-      <div className= "flex-2" style={{ display: "flex" }}>
-        <div id="sidenav">
-            <h1><p><i className="fa fa-exchange" aria-hidden="true"></i>   <b className='logo'>L7ICCSP</b></p></h1>
-            <List disablePadding dense>
+      <div>
+        <div className="sidenav">
+          <div className="logo" style={{ padding: "20px" }}>
+            <p>
+              <FontAwesomeIcon icon={faExchangeAlt} />
+              <b> L7ICCSP</b>
+            </p>
+          </div>
+          <List disablePadding dense>
+            <div className="navlist">
               <ListItem button>
-                <Link to="/upload">Upload File</Link>
+                <Link to="/upload">
+                  <FontAwesomeIcon icon={faPlusSquare} /> Upload File
+                </Link>
               </ListItem>
+            </div>
+            <div className="navlist">
               <ListItem button>
-                <Link to="/uploads">Uploads</Link>
+                <Link to="/uploads">
+                  <FontAwesomeIcon icon={faCloudUploadAlt} /> Uploads
+                </Link>
               </ListItem>
+            </div>
+            <div className="navlist">
               <ListItem button>
-                <Link to="/downloads">Downloads</Link>
+                <Link to="/downloads">
+                  <FontAwesomeIcon icon={faCloudDownloadAlt} /> Downloads
+                </Link>
               </ListItem>
-            </List>
+            </div>
+          </List>
         </div>
-        <div style={{ flex: 5, padding: "40px" }}>
+        <div className="main">
           <Switch>
-            <Route exact path="/upload" children={uploader}/>
-            <Route exact path="/uploads" children={uploaderFiles}/>
-            <Route exact path="/downloads" children={downloader}/>
-          </Switch> 
+            <Route exact path="/upload" children={uploader} />
+            <Route exact path="/uploads" children={uploaderFiles} />
+            <Route exact path="/downloads" children={downloader} />
+          </Switch>
         </div>
       </div>
     </HashRouter>

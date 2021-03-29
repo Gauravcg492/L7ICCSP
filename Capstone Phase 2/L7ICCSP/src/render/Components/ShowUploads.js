@@ -38,8 +38,8 @@ class ShowUploads extends Component {
       render(){  return(
          
             <div>
-            <UploadButton updateUploads={this.onRequestForUploadedFilesList}/>
-            <br/><br/>
+            {/* <UploadButton updateUploads={this.onRequestForUploadedFilesList}/>
+            <br/><br/> */}
             <button onClick={this.onRequestForUploadedFilesList}>Show Uploads</button>
             {this.displayFiles()}
             </div>
