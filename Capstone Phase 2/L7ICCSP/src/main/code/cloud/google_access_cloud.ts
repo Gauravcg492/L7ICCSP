@@ -33,16 +33,16 @@ export class GoogleAccessCloud implements AccessCloud {
             }
             const res = await this.drive.files.list({
                 q: queryString,
-                fields: 'nextPageToken, files(id, name)',
+                fields: 'nextPageToken, files(id, name, webViewLink, modifiedTime)',
             });
             if (res) {
                 const files = res.data.files;
                 console.log('Files:');
                 if (files.length) {
                     files.map((file: any) => {
-                        console.log(`${file.name} (${file.id})`);
+                        console.log(`${file.name} (${file.id}) ${file.webViewLink} ${file.modifiedTime}`);
                         this.fileNameToId[file.name] = file.id;
-                        fileNames.push(file.name + ',' + file.id);
+                        fileNames.push(`${file.name},${file.id},${file.webViewLink},${file.modifiedTime}`);
                     });
                 } else {
                     console.log("No files found");
