@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, ipcRenderer } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import path from 'path';
 import { GoogleAuth } from "./code/authenticator/googleAuth";
 import readline from 'readline';
@@ -44,7 +44,7 @@ async function createWindow() {
     await operations.setUser();
     console.log("Operations Set")
     const win = new BrowserWindow({
-        width: 800,
+        width: 1200,
         height: 600,
         webPreferences: {
             nodeIntegration: false,
@@ -52,7 +52,11 @@ async function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
         }
     });
-    win.loadFile('index.html')
+    win.loadFile('index.html');
+    win.webContents.on('new-window', (e, url) => {
+        e.preventDefault();
+        shell.openExternal(url);
+    });
 }
 
 // Electron EndPoints
@@ -66,7 +70,9 @@ ipcMain.on('files', async (event, source) => {
             const elements = element.split(",");
             fileObj.push({
                 name: elements[0],
-                id: elements[1]
+                id: elements[1],
+                url: elements[2],
+                date: elements[3] // TODO convert to UTC string
             });
         }
         event.sender.send('list', fileObj);
@@ -78,9 +84,11 @@ ipcMain.on('files', async (event, source) => {
         console.log("fetching list of files in ", downloadsPath);
         const fileObj = []
         for (let index = 0; index < files.length; index++) {
+            const stats = fs.statSync(files[index]);
             fileObj.push({
                 name: files[index],
-                id: index
+                id: index,
+                date: stats.mtime.toUTCString()
             });
         }
         event.sender.send('list', fileObj);
@@ -90,7 +98,7 @@ ipcMain.on('files', async (event, source) => {
 
 ipcMain.on('uploadPath', async (event, filePath: string) => {
     console.log("initiating an upload to cloud for file ", filePath);
-    const result = await operations.upload(filePath.replace(/\\/g,'/'), false, constants.ROOTDIR);
+    const result = await operations.upload(filePath.replace(/\\/g, '/'), false, constants.ROOTDIR);
     event.sender.send('isUploadDone', result);
 
 });
@@ -101,6 +109,22 @@ ipcMain.on('downloadFile', async (event, fileName, fileId) => {
     const downloadsPath = conf.downloadsPath;
     const result = await operations.download(downloadsPath, fileName, fileId);
     event.sender.send('isDownloadDone', result);
+});
+
+ipcMain.on('delete', (event, source, sourceId) => {
+    let result = true;
+    try {
+        if (source === 'local') {
+            const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
+            const downloadsPath = conf.downloadsPath;
+            fs.unlinkSync(`${downloadsPath}/${sourceId}`);
+        }
+    } catch (err) {
+        console.log("delete error");
+        console.log(err);
+        result = false;
+    }
+    event.sender.send('isDelete', result);
 });
 
 app.whenReady().then(createWindow)
