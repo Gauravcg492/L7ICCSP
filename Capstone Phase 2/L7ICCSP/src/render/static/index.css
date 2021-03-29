@@ -16,6 +16,12 @@ body {
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
+.paperHeading {
+  color: rgb(99, 99, 99);
+  font-size: 20px;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
 .uploadFilePage {
   margin: 30px;
 }
@@ -58,10 +64,29 @@ td {
 }
 
 .main {
-  background-color: white;
   margin-left: 20.5%; /* Same as the width of the sidenav */
   padding: 0px 10px;
   height: 100%;
+}
+
+.showFiles {
+  display: flex;
+  align-content: center;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+}
+
+.matPaper {
+  height: 80%;
+  width: 70%;
+  align-self: center;
+  overflow-y: auto;
+}
+
+.matCard {
+  display: flex;
+  align-items: center;
 }
 
 .rec_list {

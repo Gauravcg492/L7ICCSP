@@ -7,54 +7,25 @@ import {
   faPlusSquare,
   faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import FileRowDownloads from "./FileRowDownloads";
-import ShowUploads from "./ShowUploads";
+import {
+  List,
+  ListItem,
+} from "@material-ui/core";
 import UploadButton from "./UploadButton";
-import ShowDownloads from "./ShowDownloads";
-
-let onRequestForDownloadedFilesList = (event) => {
-  console.log("fetching file-list from downloads folder");
-  window.api.filesApi.fetchFiles("download");
-  window.api.filesApi
-    .getFiles()
-    .then((fileObj) => {
-      this.setState({
-        downloadedFiles: fileObj,
-      });
-    })
-    .catch((err) => console.log(err));
-};
-
-// appendAFileToDownloadsList = (fileName, fileId) => {
-//     if(this.state.uploadedFiles){
-//         this.state.uploadedFiles.unshift({id:fileId,name:fileName});
-//     }else{
-//         this.state.uploadedFiles = [{id:fileId,name:fileName}];
-//     }
-// };
-
-let displayFiles = () => {
-  if (this.state.downloadedFiles) {
-    const fileTable = this.state.downloadedFiles.map((file) => (
-      <FileRowDownloads fileName={file.name} fileId={file.id} path={""} />
-    ));
-    return <div>{fileTable}</div>;
-  }
-};
+import ListFiles from "./ListFile";
 
 const uploader = () => {
   return <UploadButton />;
+  //   return <ListFile source="upload" title="Uploads" />;
 };
 
 const uploaderFiles = () => {
-  return <ShowUploads />;
+  //   return <ShowUploads />;
+  return <ListFiles source="upload" title="Uploads" />;
 };
 
 const downloader = () => {
-  return <ShowDownloads />;
+  return <ListFiles source="download" title="Downloads" />;
 };
 
 function Sidebar() {

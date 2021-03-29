@@ -1,6 +1,5 @@
 import React, {Component, component} from 'react';
 import FileRowDownloads from './FileRowDownloads';
-import ShowUploads from './ShowUploads';
 
 class ShowDownloads extends Component {
     state = {
@@ -35,8 +34,6 @@ class ShowDownloads extends Component {
       render(){  return(
          
             <div>
-                {/* <ShowUploads updateDownloads = {this.onRequestForDownloadedFilesList}/>
-                <br/><br/> */}
                 <button onClick={this.onRequestForDownloadedFilesList}>Show Downloads</button>
                 {this.displayFiles()}
             </div>

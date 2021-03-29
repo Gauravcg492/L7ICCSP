@@ -1,14 +1,55 @@
-import React,{component} from 'react';
+import React from "react";
+import { Card, Button } from "@material-ui/core";
+import {
+  InsertDriveFile,
+  Delete,
+  Launch
+} from "@material-ui/icons";
 
-function FileRowDownloads({fileName, path, fileId}){
-    console.log("in file rows",fileName, fileId)
-    return(
-        <tr key = {fileId}>
-            <td>{fileName}</td>
-            <td>{" >>>> "}</td>
-            <td><button className="fileRowDownloadButton" >Open</button></td>
-        </tr>
-    )
+/**
+ * 
+ * @param {name,id,date,deleteHandler} props 
+ * @returns 
+ */
+function FileRowDownloads(props) {
+  console.log("in file rows", props.name, props.id);
+  const deleteFileRow = () => {
+    props.deleteHandler('local', props.name);
+  }
+  // TODO set up channel to send open message to open using default application
+  return (
+    <Card className="matCard">
+      <InsertDriveFile
+        fontSize="large"
+        style={{ marginLeft: "1%", marginRight: "1%" }}
+      />
+      <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.name}</p>
+      <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.date}</p>
+      <Button
+        variant="outlined"
+        startIcon={<Delete />}
+        style={{
+          marginLeft: "auto",
+          marginRight: "1%",
+          textTransform: "none",
+        }}
+        onClick={deleteFileRow}
+      >
+        Delete
+      </Button>
+      <Button
+        variant="outlined"
+        startIcon={<Launch />}
+        style={{
+          marginLeft: "1%",
+          marginRight: "1%",
+          textTransform: "none",
+        }}
+      >
+        Open
+      </Button>
+    </Card>
+  );
 }
 
 export default FileRowDownloads;

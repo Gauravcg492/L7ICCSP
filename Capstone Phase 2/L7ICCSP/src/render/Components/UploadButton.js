@@ -1,3 +1,5 @@
+import { Paper, Card, Button } from "@material-ui/core";
+import { CloudUploadTwoTone, InsertDriveFile } from "@material-ui/icons";
 import React, { Component } from "react";
 
 class UploadButton extends Component {
@@ -33,27 +35,61 @@ class UploadButton extends Component {
     if (this.state.selectedFile) {
       console.log(this.state.selectedFile);
       return (
-        <div>
-          <div>
-            <h2>File Details:</h2>
-
-            <p>File Name: {this.state.selectedFile.name}</p>
-            <p>File Path: {this.state.selectedFile.path}</p>
-          </div>
-          <div>
-            <button onClick={this.onFileUpload}>Upload!</button>
-          </div>
-        </div>
+        <Card className="matCard">
+          <InsertDriveFile
+            fontSize="large"
+            style={{ marginLeft: "1%", marginRight: "1%" }}
+          />
+          <p style={{ marginLeft: "1%", marginRight: "1%" }}>
+            {this.state.selectedFile.name}
+          </p>
+          <p style={{ marginLeft: "1%", marginRight: "1%" }}>
+            {this.state.selectedFile.path}
+          </p>
+          <Button
+            variant="outlined"
+            startIcon={<CloudUploadTwoTone />}
+            style={{
+              marginLeft: "auto",
+              marginRight: "1%",
+              textTransform: "none",
+            }}
+            onClick={this.onFileUpload}
+          >
+            Upload
+          </Button>
+        </Card>
       );
     }
   };
 
   render() {
     return (
-      <div className="uploadFilePage">
-        <p className="pageHeading">Upload a file</p>
-        <input type="file" onChange={this.onFileChange} />
-        {this.fileData()}
+      <div className="showFiles">
+        <Paper className="matPaper">
+          <Card className="matCard">
+            <p
+              className="pageHeading"
+              style={{ marginLeft: "1%", marginRight: "1%" }}
+            >
+              Upload a file
+            </p>
+            <div>
+              <input
+                id="contained-button-file"
+                type="file"
+                onChange={this.onFileChange}
+                style={{ display: "none" }}
+              />
+              <label htmlFor="contained-button-file">
+                <Button variant="contained" color="default" component="span" style={{textTransform:"none"}}>
+                  Choose a File
+                </Button>
+              </label>
+            </div>
+          </Card>
+          {this.fileData()}
+        </Paper>
       </div>
     );
   }

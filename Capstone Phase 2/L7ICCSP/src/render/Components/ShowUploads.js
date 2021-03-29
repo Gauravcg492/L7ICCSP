@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import FileRow from './FileRow';
-import UploadButton from './UploadButton';
 
 class ShowUploads extends Component {
     constructor(props) {
@@ -38,8 +37,6 @@ class ShowUploads extends Component {
       render(){  return(
          
             <div>
-            {/* <UploadButton updateUploads={this.onRequestForUploadedFilesList}/>
-            <br/><br/> */}
             <button onClick={this.onRequestForUploadedFilesList}>Show Uploads</button>
             {this.displayFiles()}
             </div>
