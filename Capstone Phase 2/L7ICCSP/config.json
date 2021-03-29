@@ -4,5 +4,5 @@
         "filename" : "details.json"
     },
 
-    "downloadsPath" : "./"
+    "downloadsPath" : "./test_data"
 }
