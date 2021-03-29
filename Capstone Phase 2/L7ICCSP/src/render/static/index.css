@@ -3,12 +3,16 @@ body{
     font-family: "Lato", sans-serif;
     color: #ddd;
     background-color:whitesmoke;
+    min-height: 100%;
 }
 
+#root {
+  height: 100%;
+}
 
 #header {
-  position: absolute;
   width: 220px;
+  height: 100%;
 }
 
 .logo{
@@ -52,9 +56,35 @@ body{
     font-size: 20px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   }
+.flex-2 {
+  display: flex;
+  align-items: stretch;
+}
+  #sidenav {
+    height: inherit;
+    padding: "10px";
+    min-height: 100%;
+    width: 280px;
+    background-color:black;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    padding-top: 20px;
+  }
+
+  #sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 20px;
+    color: #818181;
+    display: block;
+  }
   
-  
-  .sidenav {
+  #sidenav a:hover {
+    color: #f1f1f1;
+  }
+  .sidenavr {
     height: 100%;
     width: 280px;
     position: fixed;
@@ -66,7 +96,7 @@ body{
     padding-top: 20px;
   }
   
-  .sidenav a {
+  .sidenavr a {
     padding: 6px 8px 6px 16px;
     text-decoration: none;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
@@ -75,7 +105,7 @@ body{
     display: block;
   }
   
-  .sidenav a:hover {
+  .sidenavr a:hover {
     color: #f1f1f1;
   }
   

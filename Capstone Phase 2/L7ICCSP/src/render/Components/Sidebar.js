@@ -35,36 +35,36 @@ let displayFiles = () => {
 
 const uploader = ()=>{
   return(
-    <body>
+    <div>
       <h1>Upload Files</h1>
       <UploadButton/>
-    </body>
+    </div>
   )
 };
 
 const uploaderFiles = ()=>{
   return(
-    <body>
+    <div>
       <h1>Uploaded Files</h1>
       <ShowUploads/>
-    </body>
+    </div>
   )
 };
 
 const downloader = ()=>{
   return(
-    <body>
+    <div>
       <h1>Uploaded Files</h1>
       <ShowDownloads/>
-    </body>
+    </div>
   )
 }
 
 function Sidebar() {
   return (
     <HashRouter>
-      <div>
-        <div className='sidenav'>
+      <div className= "flex-2" style={{ display: "flex" }}>
+        <div id="sidenav">
             <h1><p><i className="fa fa-exchange" aria-hidden="true"></i>   <b className='logo'>L7ICCSP</b></p></h1>
             <List disablePadding dense>
               <ListItem button>
@@ -77,11 +77,13 @@ function Sidebar() {
                 <Link to="/downloads">Downloads</Link>
               </ListItem>
             </List>
-            <Switch>
-              <Route exact path="/upload" component={uploader}/>
-              <Route exact path="/uploads" component={uploaderFiles}/>
-              <Route exact path="/downloads" component={downloader}/>
-            </Switch> 
+        </div>
+        <div style={{ flex: 5, padding: "40px" }}>
+          <Switch>
+            <Route exact path="/upload" children={uploader}/>
+            <Route exact path="/uploads" children={uploaderFiles}/>
+            <Route exact path="/downloads" children={downloader}/>
+          </Switch> 
         </div>
       </div>
     </HashRouter>
