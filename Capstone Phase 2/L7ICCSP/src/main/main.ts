@@ -8,8 +8,8 @@ import { LocalAccessStorage } from './code/storage/local_access_storage';
 import { AccessStorage } from "./code/storage/access_storage";
 import { constants } from "./code/utils/constants";
 import jsonfile from "jsonfile";
-
 import fs from 'fs';
+
 // TODO Create a singleton pattern class with createWindow and other methods enclosed in it to avoid using global variables
 let access_cloud: GoogleAccessCloud;
 let operations: CloudOperations;
@@ -56,6 +56,12 @@ async function createWindow() {
     win.webContents.on('new-window', (e, url) => {
         e.preventDefault();
         shell.openExternal(url);
+    });
+}
+
+if(!app.isPackaged) {
+    require('electron-reloader')(module, {
+        debug: true
     });
 }
 
