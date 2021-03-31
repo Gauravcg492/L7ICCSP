@@ -44,8 +44,8 @@ async function createWindow() {
     await operations.setUser();
     console.log("Operations Set")
     const win = new BrowserWindow({
-        width: 1200,
-        height: 600,
+        width: 1440,
+        height: 1080,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -61,37 +61,45 @@ async function createWindow() {
 
 // Electron EndPoints
 ipcMain.on('files', async (event, source) => {
-    if (source === 'upload') {
-        const fileObj = [];
-        const files = await access_cloud.getDirList(constants.ROOTDIR);
-
-        for (let index = 0; index < files.length; index++) {
-            const element = files[index];
-            const elements = element.split(",");
-            fileObj.push({
-                name: elements[0],
-                id: elements[1],
-                url: elements[2],
-                date: elements[3] // TODO convert to UTC string
-            });
+    try {
+        if (source === 'upload') {
+            const fileObj = [];
+            const files = await access_cloud.getDirList(constants.ROOTDIR);
+    
+            for (let index = 0; index < files.length; index++) {
+                const element = files[index];
+                const elements = element.split(",");
+                const fileDate = new Date(elements[3])
+                fileObj.push({
+                    name: elements[0],
+                    id: elements[1],
+                    url: elements[2],
+                    date: fileDate.toLocaleString()
+                });
+            }
+            event.sender.send('list', fileObj);
         }
-        event.sender.send('list', fileObj);
-    }
-    else if (source === 'download') {
-        const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
-        const downloadsPath = conf.downloadsPath;
-        let files = fs.readdirSync(downloadsPath);
-        console.log("fetching list of files in ", downloadsPath);
-        const fileObj = []
-        for (let index = 0; index < files.length; index++) {
-            const stats = fs.statSync(files[index]);
-            fileObj.push({
-                name: files[index],
-                id: index,
-                date: stats.mtime.toUTCString()
-            });
+        else if (source === 'download') {
+            // TODO fileSync error
+            const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
+            const downloadsPath = conf.downloadsPath;
+            let files = fs.readdirSync(downloadsPath);
+            console.log("fetching list of files in ", downloadsPath);
+            const fileObj = []
+            for (let index = 0; index < files.length; index++) {
+                const stats = fs.statSync(`${downloadsPath}/${files[index]}`);
+                fileObj.push({
+                    name: files[index],
+                    id: index,
+                    date: stats.mtime.toLocaleString()
+                });
+            }
+            event.sender.send('list', fileObj);
         }
-        event.sender.send('list', fileObj);
+    } catch(err) {
+        console.log("Fetch Files error");
+        console.log(err);
+        event.sender.send('list', []);
     }
 
 });
@@ -125,6 +133,25 @@ ipcMain.on('delete', (event, source, sourceId) => {
         result = false;
     }
     event.sender.send('isDelete', result);
+});
+
+ipcMain.on('open', (_, filename) => {
+    try {
+        const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
+        let downloadsPath = conf.downloadsPath;
+        if(downloadsPath.startsWith('.')){
+            downloadsPath = path.resolve(downloadsPath);
+        }
+        shell.openPath(`${downloadsPath}/${filename}`).then((err) => {
+            if(err) {
+                console.log("OpenPath Error");
+                console.log(err);
+            }
+        });
+    } catch (err) {
+        console.log("delete error");
+        console.log(err);
+    }
 });
 
 app.whenReady().then(createWindow)

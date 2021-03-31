@@ -41,6 +41,10 @@ contextBridge.exposeInMainWorld('api', {
                     resolve(isDeleted);
                 })
             });
+        },
+        openFile(filename: string) {
+            console.log("Filename: ", filename);
+            ipcRenderer.send('open', filename);
         }
 
     }
