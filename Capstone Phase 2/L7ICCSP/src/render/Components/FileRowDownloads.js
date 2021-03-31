@@ -15,7 +15,11 @@ function FileRowDownloads(props) {
   console.log("in file rows", props.name, props.id);
   const deleteFileRow = () => {
     props.deleteHandler('local', props.name);
-  }
+  };
+
+  const openFile = () => {
+    window.api.filesApi.openFile(props.name);
+  };
   // TODO set up channel to send open message to open using default application
   return (
     <Card className="matCard">
@@ -45,6 +49,7 @@ function FileRowDownloads(props) {
           marginRight: "1%",
           textTransform: "none",
         }}
+        onClick={openFile}
       >
         Open
       </Button>

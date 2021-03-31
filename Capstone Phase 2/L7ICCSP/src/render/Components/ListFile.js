@@ -25,7 +25,7 @@ const listFiles = (props) => {
   };
 
   const deleteFile = (source, sourceId) => {
-    console.log("Deleting File: ", name);
+    console.log("Deleting File: ", sourceId);
     window.api.filesApi.deleteFile(source, sourceId);
     window.api.filesApi.isFileDeleted().then((isDeleted) => {
         if(isDeleted) {

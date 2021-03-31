@@ -12,6 +12,7 @@ import {
  * @returns
  */
 // TODO delete API set up
+// TODO alignment of content in each card
 const fileRow = (props) => {
   const onDownloadFileFromCloud = () => {
     console.log("requesting to download ", props.name, ", id: ", props.id);

@@ -1,5 +1,5 @@
 import React from "react";
-import { HashRouter, Link, Route, Switch } from "react-router-dom";
+import { HashRouter, Link, Route, Switch, Redirect } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCloudDownloadAlt,
@@ -7,10 +7,7 @@ import {
   faPlusSquare,
   faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  List,
-  ListItem,
-} from "@material-ui/core";
+import { List, ListItem } from "@material-ui/core";
 import UploadButton from "./UploadButton";
 import ListFiles from "./ListFile";
 
@@ -65,6 +62,9 @@ function Sidebar() {
         </div>
         <div className="main">
           <Switch>
+            <Route exact path="/">
+              <Redirect to="/upload" />
+            </Route>
             <Route exact path="/upload" children={uploader} />
             <Route exact path="/uploads" children={uploaderFiles} />
             <Route exact path="/downloads" children={downloader} />
