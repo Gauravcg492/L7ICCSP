@@ -37,7 +37,7 @@ contextBridge.exposeInMainWorld('api', {
         },
         isFileDeleted() {
             return new Promise((resolve, _) => {
-                ipcRenderer.on('isDelete', (_, isDeleted:boolean) => {
+                ipcRenderer.on('isDelete', (_, isDeleted: boolean) => {
                     resolve(isDeleted);
                 })
             });
@@ -45,6 +45,13 @@ contextBridge.exposeInMainWorld('api', {
         openFile(filename: string) {
             console.log("Filename: ", filename);
             ipcRenderer.send('open', filename);
+        },
+        isFileOpened() {
+            return new Promise((resolve, _) => {
+                ipcRenderer.on('isOpen', (_, isOpened: boolean) => {
+                    resolve(isOpened);
+                });
+            });
         }
 
     }

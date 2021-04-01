@@ -11,7 +11,6 @@ import {
  * @param {name,id,date,url} props
  * @returns
  */
-// TODO delete API set up
 // TODO alignment of content in each card
 const fileRow = (props) => {
   const onDownloadFileFromCloud = () => {
@@ -28,6 +27,11 @@ const fileRow = (props) => {
       })
       .catch((err) => console.log(err));
   };
+
+  const deleteFileRow = () => {
+    props.deleteHandler("drive", props.id);
+  };
+
   return (
     <Card className="matCard">
       <InsertDriveFile
@@ -57,6 +61,7 @@ const fileRow = (props) => {
           marginRight: "1%",
           textTransform: "none",
         }}
+        onClick={deleteFileRow}
       >
         Delete
       </Button>

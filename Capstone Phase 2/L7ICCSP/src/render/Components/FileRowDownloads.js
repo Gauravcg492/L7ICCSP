@@ -1,26 +1,26 @@
 import React from "react";
 import { Card, Button } from "@material-ui/core";
-import {
-  InsertDriveFile,
-  Delete,
-  Launch
-} from "@material-ui/icons";
+import { InsertDriveFile, Delete, Launch } from "@material-ui/icons";
 
 /**
- * 
- * @param {name,id,date,deleteHandler} props 
- * @returns 
+ *
+ * @param {name,id,date,deleteHandler} props
+ * @returns
  */
 function FileRowDownloads(props) {
   console.log("in file rows", props.name, props.id);
   const deleteFileRow = () => {
-    props.deleteHandler('local', props.name);
+    props.deleteHandler("local", props.name);
   };
 
   const openFile = () => {
     window.api.filesApi.openFile(props.name);
+    window.api.filesApi.isFileOpened().then((isOpened) => {
+      if (!isOpened) {
+        alert("Unable to open file");
+      }
+    });
   };
-  // TODO set up channel to send open message to open using default application
   return (
     <Card className="matCard">
       <InsertDriveFile

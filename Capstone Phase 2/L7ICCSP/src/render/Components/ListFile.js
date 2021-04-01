@@ -46,6 +46,7 @@ const listFiles = (props) => {
                   id={item.id}
                   date={item.date}
                   url={item.url}
+                  deleteHandler={deleteFile}
                 />
               </React.Fragment>
             );

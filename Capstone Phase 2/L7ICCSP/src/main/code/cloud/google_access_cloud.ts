@@ -1,10 +1,11 @@
 import { AccessCloud } from "./access_cloud";
 import fs from 'fs';
 import { constants } from '../utils/constants';
+import { drive_v3 } from "googleapis";
 
 
 export class GoogleAccessCloud implements AccessCloud {
-    private drive: any;
+    private drive: drive_v3.Drive;
     private fileNameToId: { [key: string]: string };
 
     private ROOTDIR = constants.ROOTDIR;
@@ -15,11 +16,11 @@ export class GoogleAccessCloud implements AccessCloud {
         this.drive = drive;
         this.fileNameToId = {};
     }
-    
+
     private getFolderId(foldername: string): string {
         return this.fileNameToId[foldername] ?? "";
     }
-    
+
     getFileId(this: GoogleAccessCloud, filename: string): string {
         return this.fileNameToId[filename];
     }
@@ -38,7 +39,7 @@ export class GoogleAccessCloud implements AccessCloud {
             if (res) {
                 const files = res.data.files;
                 console.log('Files:');
-                if (files.length) {
+                if (files && files.length) {
                     files.map((file: any) => {
                         console.log(`${file.name} (${file.id}) ${file.webViewLink} ${file.modifiedTime}`);
                         this.fileNameToId[file.name] = file.id;
@@ -121,11 +122,11 @@ export class GoogleAccessCloud implements AccessCloud {
         };
         try {
             const res = await this.drive.files.create({
-                resource: fileMetadata,
+                requestBody: fileMetadata,
                 media: media,
                 fields: 'id'
             });
-            if (res) {
+            if (res && res.data.id) {
                 console.log('File Id: ', res.data.id);
                 this.fileNameToId[filename] = res.data.id;
                 console.log("ID", this.fileNameToId[filename]);
@@ -149,7 +150,7 @@ export class GoogleAccessCloud implements AccessCloud {
         promises.push(new Promise((resolve, reject) => {
             this.drive.files.update({
                 fileId: fileId,
-                resource: body,
+                requestBody: body,
             }, (err: any, res: any) => {
                 if (err) reject(err);
                 else {
@@ -176,17 +177,15 @@ export class GoogleAccessCloud implements AccessCloud {
         }
         const queryString = queryString1 + queryString2;
         console.log("query string: ", queryString);
-        var pageToken = null;
         const filenames: string[] = [];
         try {
             const res = await this.drive.files.list({
                 q: queryString,
                 fields: 'nextPageToken, files(id,name)',
                 spaces: 'drive',
-                pageToken: pageToken,
             });
             const files = res.data.files;
-            if (files.length) {
+            if (files && files.length) {
                 console.log('Files:', files, '\n');
                 files.map((file: any) => {
                     this.fileNameToId[file.name] = file.id;
@@ -214,19 +213,31 @@ export class GoogleAccessCloud implements AccessCloud {
         };
         try {
             const file = await this.drive.files.create({
-                resource: fileMetadata,
+                requestBody: fileMetadata,
                 fields: 'id'
             });
-            if (file) {
+            if (file && file.data && file.data.id) {
                 this.fileNameToId[folderName] = file.data.id;
+                return true;
             }
-            return true;
         } catch (err) {
             console.log(err);
         }
         return false;
     }
 
+    async deleteFile(fileId: string): Promise<boolean> {
+        try {
+            await this.drive.files.delete({
+                fileId: fileId
+            });
+            return true;
+        } catch (err) {
+            console.log("Delete File error");
+            console.log(err)
+        }
+        return false;
+    }
 }
 
 // const accessCloud = new GoogleAccessCloud();

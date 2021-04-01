@@ -59,7 +59,7 @@ async function createWindow() {
     });
 }
 
-if(!app.isPackaged) {
+if (!app.isPackaged) {
     require('electron-reloader')(module, {
         debug: true
     });
@@ -67,11 +67,11 @@ if(!app.isPackaged) {
 
 // Electron EndPoints
 ipcMain.on('files', async (event, source) => {
+    const fileObj = [];
     try {
         if (source === 'upload') {
-            const fileObj = [];
             const files = await access_cloud.getDirList(constants.ROOTDIR);
-    
+
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 const elements = element.split(",");
@@ -83,15 +83,12 @@ ipcMain.on('files', async (event, source) => {
                     date: fileDate.toLocaleString()
                 });
             }
-            event.sender.send('list', fileObj);
         }
         else if (source === 'download') {
-            // TODO fileSync error
             const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
             const downloadsPath = conf.downloadsPath;
             let files = fs.readdirSync(downloadsPath);
             console.log("fetching list of files in ", downloadsPath);
-            const fileObj = []
             for (let index = 0; index < files.length; index++) {
                 const stats = fs.statSync(`${downloadsPath}/${files[index]}`);
                 fileObj.push({
@@ -100,9 +97,9 @@ ipcMain.on('files', async (event, source) => {
                     date: stats.mtime.toLocaleString()
                 });
             }
-            event.sender.send('list', fileObj);
         }
-    } catch(err) {
+        event.sender.send('list', fileObj);
+    } catch (err) {
         console.log("Fetch Files error");
         console.log(err);
         event.sender.send('list', []);
@@ -125,13 +122,15 @@ ipcMain.on('downloadFile', async (event, fileName, fileId) => {
     event.sender.send('isDownloadDone', result);
 });
 
-ipcMain.on('delete', (event, source, sourceId) => {
+ipcMain.on('delete', async (event, source, sourceId) => {
     let result = true;
     try {
         if (source === 'local') {
             const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
             const downloadsPath = conf.downloadsPath;
             fs.unlinkSync(`${downloadsPath}/${sourceId}`);
+        } else if (source === 'drive') {
+            result = await access_cloud.deleteFile(sourceId);
         }
     } catch (err) {
         console.log("delete error");
@@ -141,23 +140,24 @@ ipcMain.on('delete', (event, source, sourceId) => {
     event.sender.send('isDelete', result);
 });
 
-ipcMain.on('open', (_, filename) => {
+ipcMain.on('open', async (event, filename) => {
+    let result = true;
     try {
         const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
         let downloadsPath = conf.downloadsPath;
-        if(downloadsPath.startsWith('.')){
+        if (downloadsPath.startsWith('.')) {
             downloadsPath = path.resolve(downloadsPath);
         }
-        shell.openPath(`${downloadsPath}/${filename}`).then((err) => {
-            if(err) {
-                console.log("OpenPath Error");
-                console.log(err);
-            }
-        });
+        const err = await shell.openPath(`${downloadsPath}/${filename}`);
+        if (err.length > 0) {
+            throw new Error(err);
+        }
     } catch (err) {
-        console.log("delete error");
+        console.log("Open error");
         console.log(err);
+        result = false;
     }
+    event.sender.send('isOpen', result);
 });
 
 app.whenReady().then(createWindow)
