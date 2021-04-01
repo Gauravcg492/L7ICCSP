@@ -61,7 +61,8 @@ async function createWindow() {
 
 if (!app.isPackaged) {
     require('electron-reloader')(module, {
-        debug: true
+        debug: true,
+        ignore: ['temp|[/\\]\./;', 'test_data|[/\\]\./;']
     });
 }
 
