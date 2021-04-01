@@ -24,15 +24,43 @@ const listFiles = (props) => {
       .catch((err) => console.log(err));
   };
 
-  const deleteFile = (source, sourceId) => {
+  const onDownloadFileFromCloud = (id, name, setLoading) => {
+    setLoading(true);
+    console.log("requesting to download ", name, ", id: ", id);
+    window.api.filesApi.downloadAFile(name, id);
+    window.api.filesApi.isFileDownloaded().then((isDownloadDone) => {
+      if (isDownloadDone) {
+        alert("verified, AUTHENTIC :)");
+      } else {
+        alert("download failed");
+      }
+      setLoading(false);
+    });
+  };
+
+  const onOpenFileLocal = (name) => {
+    window.api.filesApi.openFile(name);
+    window.api.filesApi.isFileOpened().then((isOpened) => {
+      if (!isOpened) {
+        alert("Unable to open file");
+      }
+    });
+  };
+
+  const deleteFile = (source, sourceId, setLoading) => {
+    setLoading(true);
     console.log("Deleting File: ", sourceId);
     window.api.filesApi.deleteFile(source, sourceId);
     window.api.filesApi.isFileDeleted().then((isDeleted) => {
-        if(isDeleted) {
-            onRequestForFilesList();
-        }
-    })
-  }
+      if (isDeleted) {
+        alert("Delete Successful");
+        onRequestForFilesList();
+      } else {
+        alert("Delete Unsuccessful");
+      }
+      setLoading(false);
+    });
+  };
 
   const displayFiles = () => {
     if (props.source === "upload") {
@@ -47,6 +75,7 @@ const listFiles = (props) => {
                   date={item.date}
                   url={item.url}
                   deleteHandler={deleteFile}
+                  downloadHandler={onDownloadFileFromCloud}
                 />
               </React.Fragment>
             );
@@ -64,6 +93,7 @@ const listFiles = (props) => {
                   id={item.id}
                   date={item.date}
                   deleteHandler={deleteFile}
+                  openHandler={onOpenFileLocal}
                 />
               </React.Fragment>
             );
@@ -73,9 +103,9 @@ const listFiles = (props) => {
     }
   };
 
-  if(pathState !== props.source) {
-      onRequestForFilesList();
-      setPathState(props.source);
+  if (pathState !== props.source) {
+    onRequestForFilesList();
+    setPathState(props.source);
   }
 
   return (

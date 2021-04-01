@@ -4,22 +4,17 @@ import { InsertDriveFile, Delete, Launch } from "@material-ui/icons";
 
 /**
  *
- * @param {name,id,date,deleteHandler} props
+ * @param {name,id,date,deleteHandler,openHandler} props
  * @returns
  */
 function FileRowDownloads(props) {
   console.log("in file rows", props.name, props.id);
   const deleteFileRow = () => {
-    props.deleteHandler("local", props.name);
+    props.deleteHandler("local", props.name, (_)=>{});
   };
 
   const openFile = () => {
-    window.api.filesApi.openFile(props.name);
-    window.api.filesApi.isFileOpened().then((isOpened) => {
-      if (!isOpened) {
-        alert("Unable to open file");
-      }
-    });
+    props.openHandler(props.name);
   };
   return (
     <Card className="matCard">

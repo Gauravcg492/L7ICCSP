@@ -1,5 +1,5 @@
-import React from "react";
-import { Card, Button } from "@material-ui/core";
+import React, { useState } from "react";
+import { Card, Button, CircularProgress } from "@material-ui/core";
 import {
   InsertDriveFile,
   Delete,
@@ -8,28 +8,19 @@ import {
 
 /**
  *
- * @param {name,id,date,url} props
+ * @param {name,id,date,url,deleteHandler,downloadHandler} props
  * @returns
  */
 // TODO alignment of content in each card
 const fileRow = (props) => {
-  const onDownloadFileFromCloud = () => {
-    console.log("requesting to download ", props.name, ", id: ", props.id);
-    window.api.filesApi.downloadAFile(props.name, props.id);
-    window.api.filesApi
-      .isFileDownloaded()
-      .then((isDownloadDone) => {
-        if (isDownloadDone) {
-          alert("verified, AUTHENTIC :)");
-        } else {
-          alert("download failed");
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+  const [loading, setLoading] = useState(false);
+
+  const downloadFile = () => {
+      props.downloadHandler(props.id, props.name, setLoading);
+  }
 
   const deleteFileRow = () => {
-    props.deleteHandler("drive", props.id);
+    props.deleteHandler("drive", props.id, setLoading);
   };
 
   return (
@@ -73,10 +64,12 @@ const fileRow = (props) => {
           marginRight: "1%",
           textTransform: "none",
         }}
-        onClick={onDownloadFileFromCloud}
+        disabled={loading}
+        onClick={downloadFile}
       >
         Download
       </Button>
+      {loading && <CircularProgress size={24} style={{marginLeft:'1%', marginRight:'1%'}} />}
     </Card>
   );
 };
