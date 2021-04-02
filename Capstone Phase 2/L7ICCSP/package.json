@@ -11,6 +11,7 @@
     "test1": "tsc && node build/main/code/cli.js",
     "dist": "electron-builder",
     "temp": "tsc && node build/main/code/utils/nodeParser.js",
+    "watch": "webpack --config webpack.common.js --watch",
     "hashTest": "tsc && node build/main/code/utils/hashes.js"
   },
   "keywords": [],
@@ -18,6 +19,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.12.10",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@types/chai": "^4.2.15",
@@ -33,6 +35,7 @@
     "crypto-js": "^4.0.0",
     "electron": "^11.2.0",
     "electron-builder": "^22.9.1",
+    "electron-reloader": "^1.2.0",
     "fork-ts-checker-webpack-plugin": "^6.1.0",
     "fs": "0.0.1-security",
     "mocha": "^8.3.2",
@@ -43,10 +46,16 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "googleapis": "^39.2.0",
     "jsonfile": "^6.1.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0"
   },
   "build": {
     "appId": "com.app.soft",
