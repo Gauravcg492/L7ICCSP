@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 import * as fs from "fs";
-import jsonfile from "jsonfile";
+const { Worker, isMainThread, parentPort } = require('worker_threads');
 
 // Returns the SHA256 hash of a given file
 export function sha256(File : string){
@@ -36,17 +36,23 @@ function compare2Strings(s1 : string,s2 : string){
 // Given 2 Hash compute a single Hash
 // Use Case : Compute the Hash of Intermediate Nodes
 export function concat(s1: string, s2: string){
-    var s;
-    // Concate the Hash in the order lexicgraphically least followed by other hash.
-    if(compare2Strings(s1,s2)){
-        s = s2.concat(s1.toString());
+    if (isMainThread){
+        const worker = new Worker(__filename);
+        worker.on('message', (msg:any) => { return msg; });
     }
     else{
-        s = s1.concat(s2.toString());
+        var s;
+        // Concate the Hash in the order lexicgraphically least followed by other hash.
+        if(compare2Strings(s1,s2)){
+            s = s2.concat(s1.toString());
+        }
+        else{
+            s = s1.concat(s2.toString());
+        }
+        console.log(s);
+        parentPort.postMessage(CryptoJS.SHA256(s).toString(CryptoJS.enc.Hex));
     }
-    console.log(s);
-    return CryptoJS.SHA256(s).toString(CryptoJS.enc.Hex);
-    // return s;
+    return '';
 }
 
 // let a = "a9df5381f1d9c454ae92e83afe5ff536bcef949254e61fa8f2ff3721e7ee6611";
