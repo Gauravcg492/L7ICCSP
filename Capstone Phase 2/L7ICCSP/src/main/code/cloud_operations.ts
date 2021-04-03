@@ -63,8 +63,8 @@ export class CloudOperations {
         const rootHash = this.storage.getRootHash(obj);
         console.log("RootHash");
         const merkleTree: Tree = new MerkleTree(rootHash, this.cloudClient);
-        const fileHash = sha256(file);
         try {
+            const fileHash = await sha256(file);
             obj.hash = await merkleTree.addToTree(fileHash);
             this.storage.putRootHash(obj);
             const values = await Promise.all(promises);
@@ -87,7 +87,7 @@ export class CloudOperations {
         try {
             const result = await this.cloudClient.getFile(localDir, fileId);
             if (result.length > 0) {
-                const fileHash = sha256(result);
+                const fileHash = await sha256(result);
                 const isAuthentic = await this.verify(fileHash);
                 if (isAuthentic) {
                     let filePath = `${localDir}/${filename}`;
