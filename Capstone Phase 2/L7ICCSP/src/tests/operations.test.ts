@@ -118,7 +118,8 @@ describe("Operations Unit Testing", () => {
         const promises = [];
         const files = fs.readdirSync('test_data/');
         if (files.length != 100) {
-            promises.push(createFile('test_data/file2.txt', 5));
+            // promises.push(createFile('test_data/file2.txt', 5));
+            promises.push(createFiles());
         }
         operations = await setUp();
         try {
@@ -131,7 +132,7 @@ describe("Operations Unit Testing", () => {
     it('Should upload a single file', async () => {
         let result:boolean;
         try{
-            result = await operations.upload('test_data/file2.txt', false, constants.ROOTDIR);
+            result = await operations.upload('test_data/file1.txt', false, constants.ROOTDIR);
         } catch(err) {
             result = false;
         }
