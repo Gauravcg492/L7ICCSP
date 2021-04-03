@@ -8,6 +8,7 @@
     "build-tsc": "tsc",
     "render": "webpack --config webpack.common.js",
     "start": "npm run build-tsc && electron .",
+    "reloader" : "RELOAD=true npm start",
     "test1": "tsc && node build/main/code/cli.js",
     "dist": "electron-builder",
     "temp": "tsc && node build/main/code/utils/nodeParser.js",

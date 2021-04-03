@@ -10,7 +10,7 @@ export async function sha256(file : string) : Promise<string>{
         console.log("Return to Parent");
         let x = new Promise((resolve, _) => {
             worker.on('message', (msg:string) => {
-                console.log("Inside worker message");
+                console.log("Inside worker message : " + msg);
                 resolve(msg);
             })
         });
