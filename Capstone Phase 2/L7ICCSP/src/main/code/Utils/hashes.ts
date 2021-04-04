@@ -4,24 +4,17 @@ const { Worker, isMainThread, parentPort } = require('worker_threads');
 
 // Returns the SHA256 hash of a given file
 export async function sha256(file : string) : Promise<string>{
-    if (isMainThread){
-        console.log("entering worker");
-        const worker = new Worker(__dirname + "/hashWorker.js");
-        console.log("Return to Parent");
-        let x = new Promise((resolve, _) => {
-            worker.on('message', (msg:string) => {
-                console.log("Inside worker message : " + msg);
-                resolve(msg);
-            })
-        });
-        worker.postMessage(file);
-        return await Promise.resolve(x) as string;
-    }
-    else{
-        // Read File in synchronous way
-        // Executing Js program stops until file is read
-        
-    }
+    console.log("entering worker");
+    const worker = new Worker(__dirname + "/hashWorker.js");
+    console.log("Return to Parent");
+    let x = new Promise((resolve, _) => {
+        worker.on('message', (msg:string) => {
+            console.log("Inside worker message : " + msg);
+            resolve(msg);
+        })
+    });
+    worker.postMessage(file);
+    return await Promise.resolve(x) as string;
     // const data  = jsonfile.readFileSync("count.json");
     // const hash = data['value'];
     // data['value'] = String.fromCharCode(hash.charCodeAt(0) + 1);
@@ -30,6 +23,30 @@ export async function sha256(file : string) : Promise<string>{
     return '';
 }
 
+export async function sha256V2(filepath : string,filename : string,userId : string) : Promise<string>{
+    console.log("entering worker");
+    const worker = new Worker(__dirname + "/hashWorker.js");
+    console.log("Return to Parent");
+    let x = new Promise((resolve, _) => {
+        worker.on('message', (msg:string) => {
+            console.log("Inside worker message : " + msg);
+            resolve(msg);
+        })
+    });
+    worker.postMessage({   
+            fp : filepath,
+            fn : filename,
+            uid : userId
+    });
+    return await Promise.resolve(x) as string;
+
+    // const data  = jsonfile.readFileSync("count.json");
+    // const hash = data['value'];
+    // data['value'] = String.fromCharCode(hash.charCodeAt(0) + 1);
+    // jsonfile.writeFileSync("count.json", data);
+    // return hash;
+    return '';
+}
 // Compares 2 64 character strings
 // Returns True if first string is larger than 2nd String
 // Returns False in all other cases
