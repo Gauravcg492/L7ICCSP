@@ -47,6 +47,8 @@ export async function sha256V2(filepath : string,filename : string,userId : stri
     // return hash;
     return '';
 }
+
+sha256V2("/test_data","Hi","TTTT");
 // Compares 2 64 character strings
 // Returns True if first string is larger than 2nd String
 // Returns False in all other cases
