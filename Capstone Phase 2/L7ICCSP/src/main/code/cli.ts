@@ -8,9 +8,9 @@ import { constants } from "./utils/constants";
 
 const main = async () => {
     let tester = new GoogleAuth();
-    //setTimeout(function(){ alert("Hello") },15000);
-    //let downloader = new GoogleAccessCloud(tester.getDrive());
-    //downloader.getFile("temp");
+    setTimeout(function(){ alert("Hello") },15000);
+    // let downloader = new GoogleAccessCloud(tester.getDrive());
+    // downloader.getFile("temp");
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,

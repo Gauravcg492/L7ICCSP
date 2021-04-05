@@ -14,7 +14,7 @@ export class CloudOperations {
     private id: string;
     private configPath: string;
     //Return types can be further refined
-    constructor(private cloudClient: AccessCloud, private authentication: Authentication, private storage: AccessStorage) { 
+    constructor(private cloudClient: AccessCloud, private authentication: Authentication, private storage: AccessStorage) {
         this.id = "";
         this.configPath = constants.CONFIG_PATH;
     }
@@ -50,7 +50,7 @@ export class CloudOperations {
     async upload(file: string, isFolder = false, dir: string): Promise<boolean> {
         console.log("upload called");
         const promises = [];
-        if ( isFolder ) {
+        if (isFolder) {
             promises.push(this.cloudClient.putFolder(file, dir));
         } else {
             promises.push(this.cloudClient.putFile(file, dir));
@@ -63,13 +63,13 @@ export class CloudOperations {
         const rootHash = this.storage.getRootHash(obj);
         console.log("RootHash");
         const merkleTree: Tree = new MerkleTree(rootHash, this.cloudClient);
-        const fileHash = sha256(file);
-        try{
+        try {
+            const fileHash = await sha256(file);
             obj.hash = await merkleTree.addToTree(fileHash);
             this.storage.putRootHash(obj);
             const values = await Promise.all(promises);
             return values.every(Boolean);
-        } catch(err) {
+        } catch (err) {
             console.log("CloudOperations.upload() error");
             console.log(err);
         }
@@ -84,26 +84,26 @@ export class CloudOperations {
      */
     async download(localDir: string, filename: string, fileId: string): Promise<boolean> {
         console.log("Starting Download");
-        try{
+        try {
             const result = await this.cloudClient.getFile(localDir, fileId);
-            if(result.length > 0) {
-                const fileHash = sha256(result);
+            if (result.length > 0) {
+                const fileHash = await sha256(result);
                 const isAuthentic = await this.verify(fileHash);
-                if(isAuthentic) {
+                if (isAuthentic) {
                     let filePath = `${localDir}/${filename}`;
-                    if(fs.existsSync(filePath)) {
+                    if (fs.existsSync(filePath)) {
                         filePath = `${localDir}/${Date.now()}${filename}`;
                     }
                     fs.renameSync(`${localDir}/${fileId}`, filePath);
                     console.log("File is Authentic");
-                } else{
+                } else {
                     console.log("File is tampered");
-                    // TODO delete file
                     fs.unlinkSync(result);
+                    return false;
                 }
                 return true;
             }
-        } catch(err) {
+        } catch (err) {
             console.log("CloudOperations.download() error");
             console.log(err);
         }
