@@ -59,10 +59,10 @@ async function createWindow() {
     });
 }
 
-if (!app.isPackaged) {
+if (process.env.RELOAD) {
     require('electron-reloader')(module, {
         debug: true,
-        ignore: ['temp|[/\\]\./;', 'test_data|[/\\]\./;']
+        ignore: ['temp|[/\\]\./;', 'test_data|[/\\]\./;','details.json']
     });
 }
 

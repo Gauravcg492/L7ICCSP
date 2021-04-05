@@ -3,6 +3,7 @@ export interface Tree {
     addToTree(fileHash: string): Promise<string>;
     deleteFromTree(fileHash: string): Promise<string>;
     updateToTree(fileHash: string): Promise<string>;
+    updateMerkle(): Promise<boolean>;
 }
 
 export type Node = {

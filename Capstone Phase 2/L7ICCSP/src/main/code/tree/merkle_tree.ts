@@ -183,7 +183,7 @@ export class MerkleTree implements Tree {
         return false;
     }
 
-    private async updateMerkle(this: MerkleTree) {
+    public async updateMerkle(this: MerkleTree) {
         const promises = [];
 
         this.hashesToAdd.forEach(node => {
@@ -215,11 +215,7 @@ export class MerkleTree implements Tree {
         // When there is no tree
         if (this.rootNode.hash === "") {
             newNode.currentPosition = this.LEAF;
-            const result  = await this.updateMerkle();
-            if(result) {
-                return fileHash;
-            }
-            return "";
+            return fileHash;
         }
 
         // if there are nodes
@@ -308,20 +304,12 @@ export class MerkleTree implements Tree {
                     child1 = nParent;
                     parent = this.getNode(this.childParentMap[nParent.hash]);
                 }
-                const result  = await this.updateMerkle();
-                if(result) {
-                    return child1.hash;
-                }
-                return "";
+                return child1.hash;
             } else {
                 // no parent so new parent becomes root
                 this.childParentMap[newParent.hash] = newParent.hash;
                 newParent.currentPosition = Math.max(sibling.currentPosition ?? 1, newNode.currentPosition ?? 1) + 1;
-                const result  = await this.updateMerkle();
-                if(result) {
-                    return newParent.hash
-                }
-                return "";
+                return newParent.hash
             }
         }
         return "";
