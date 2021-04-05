@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import CryptoJS from 'crypto-js';
-import { fileURLToPath } from "node:url";
 const { parentPort } = require('worker_threads');
 
 parentPort.on("message" , (filedata : any) => {

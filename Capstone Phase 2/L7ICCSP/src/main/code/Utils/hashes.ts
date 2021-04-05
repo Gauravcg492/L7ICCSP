@@ -20,7 +20,6 @@ export async function sha256(file : string) : Promise<string>{
     // data['value'] = String.fromCharCode(hash.charCodeAt(0) + 1);
     // jsonfile.writeFileSync("count.json", data);
     // return hash;
-    return '';
 }
 
 export async function sha256V2(filepath : string,filename : string,userId : string) : Promise<string>{
@@ -48,7 +47,6 @@ export async function sha256V2(filepath : string,filename : string,userId : stri
     return '';
 }
 
-sha256V2("/test_data","Hi","TTTT");
 // Compares 2 64 character strings
 // Returns True if first string is larger than 2nd String
 // Returns False in all other cases

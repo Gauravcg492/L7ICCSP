@@ -1,5 +1,5 @@
 import { verify } from './utils/verifier'
-import { sha256 } from "./utils/hashes"
+import { sha256, sha256V2 } from "./utils/hashes"
 import { AccessStorage } from "./storage/access_storage"
 import { AccessCloud } from './cloud/access_cloud';
 import { Authentication } from './authenticator/authentication';
@@ -7,7 +7,7 @@ import { constants } from './utils/constants';
 import { Tree } from './tree/tree';
 import { MerkleTree } from './tree/merkle_tree';
 import fs from 'fs';
-import { dirname } from 'path';
+
 // Class which handles upload and download
 export class CloudOperations {
 
@@ -51,7 +51,7 @@ export class CloudOperations {
         console.log("upload called");
         const promises = [];
         if (isFolder) {
-            promises.push(this.cloudClient.putFolder(file, dir));
+            return await this.cloudClient.putFolder(file, dir);
         } else {
             promises.push(this.cloudClient.putFile(file, dir));
         }
@@ -64,11 +64,20 @@ export class CloudOperations {
         console.log("RootHash");
         const merkleTree: Tree = new MerkleTree(rootHash, this.cloudClient);
         try {
-            const fileHash = await sha256(file);
+            const fileArr = file.split("/");
+            let filename = fileArr[fileArr.length - 1];
+            const result = await this.cloudClient.searchFile(filename, "");
+            if(result.length != 0) {
+                filename = Date.now().toString() + filename;
+            }
+            const fileHash = await sha256V2(file, filename, this.id);
             obj.hash = await merkleTree.addToTree(fileHash);
-            this.storage.putRootHash(obj);
             const values = await Promise.all(promises);
-            return values.every(Boolean);
+            if(values.every(Boolean)) {
+                this.storage.putRootHash(obj);
+                // TODO handle failure of updating of merkletrees
+                return await merkleTree.updateMerkle();
+            }
         } catch (err) {
             console.log("CloudOperations.upload() error");
             console.log(err);
@@ -87,7 +96,7 @@ export class CloudOperations {
         try {
             const result = await this.cloudClient.getFile(localDir, fileId);
             if (result.length > 0) {
-                const fileHash = await sha256(result);
+                const fileHash = await sha256V2(result, filename, this.id);
                 const isAuthentic = await this.verify(fileHash);
                 if (isAuthentic) {
                     let filePath = `${localDir}/${filename}`;
