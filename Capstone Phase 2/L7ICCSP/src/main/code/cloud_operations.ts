@@ -74,9 +74,15 @@ export class CloudOperations {
             obj.hash = await merkleTree.addToTree(fileHash);
             const values = await Promise.all(promises);
             if(values.every(Boolean)) {
-                this.storage.putRootHash(obj);
-                // TODO handle failure of updating of merkletrees
-                return await merkleTree.updateMerkle();
+                let result = await merkleTree.updateMerkle();
+                if(result){
+                    this.storage.putRootHash(obj);
+                    return true;
+                } else {
+                    // TODO handle failure of updating of merkletrees
+                    const fileId = this.cloudClient.getFileId(filename);
+                    await this.cloudClient.deleteFile(fileId);
+                }
             }
         } catch (err) {
             console.log("CloudOperations.upload() error");
