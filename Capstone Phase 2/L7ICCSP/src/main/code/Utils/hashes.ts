@@ -29,6 +29,7 @@ export async function sha256V2(filepath : string,filename : string,userId : stri
     let x = new Promise((resolve, _) => {
         worker.on('message', (msg:string) => {
             console.log("Inside worker message : " + msg);
+            worker.terminate();
             resolve(msg);
         })
     });

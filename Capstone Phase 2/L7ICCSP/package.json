@@ -4,7 +4,7 @@
   "description": "Layer 7 Integrity Check for Cloud Service Providers",
   "main": "build/main/main.js",
   "scripts": {
-    "test": "mocha -r ts-node/register 'src/tests/**/*.ts' --timeout 60000",
+    "test": "tsc && mocha 'build/tests/operations2.test.js' --timeout 0",
     "build-tsc": "tsc",
     "render": "webpack --config webpack.common.js",
     "start": "npm run build-tsc && electron .",

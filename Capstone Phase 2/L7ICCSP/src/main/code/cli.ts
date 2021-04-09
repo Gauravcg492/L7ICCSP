@@ -50,9 +50,10 @@ const main = async () => {
     const storage: AccessStorage = new LocalAccessStorage();
     const operations = new CloudOperations(access_cloud, tester, storage);
     await operations.setUser();
-    // await operations.upload('config.json', false, constants.ROOTDIR);
-    // await operations.upload('credentials.json', false, constants.ROOTDIR);
-    // await operations.upload('details.json', false, constants.ROOTDIR);
+    let output;
+    // let output = await operations.upload('config.json', false, constants.ROOTDIR);
+    // output = await operations.upload('credentials.json', false, constants.ROOTDIR);
+    // output = await operations.upload('details.json', false, constants.ROOTDIR);
     // await operations.upload('index.html', false, constants.ROOTDIR);
     // await operations.upload('package.json', false, constants.ROOTDIR);
     // await operations.upload('token.json', false, constants.ROOTDIR);
@@ -61,12 +62,12 @@ const main = async () => {
     // await operations.upload('count.json', false, constants.ROOTDIR);
     // await operations.upload('webpack.common.js', false, constants.ROOTDIR);
     // console.log('Upload done');
-    // const fileId = access_cloud.getFileId('count.json');
+    const fileId = access_cloud.getFileId('details.json');
     // const fileId = access_cloud.getFileId('webpack.common.js');
-    // operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "count.json", fileId);
+    output = await operations.download("/Users/ar-gaurav.cg/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "details.json", fileId);
     // operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "webpack.common.js", fileId);
-    let output = await access_cloud.searchFile('sample.txt', "");
-    console.log(output);
+    // let output = await access_cloud.searchFile('sample.txt', "");
+    console.log("upload: ", output);
 }
 
 main();

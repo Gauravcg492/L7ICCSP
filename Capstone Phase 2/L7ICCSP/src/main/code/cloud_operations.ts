@@ -40,6 +40,10 @@ export class CloudOperations {
         return await verify(filehash, rootHash, this.cloudClient);
     }
 
+    public getCloudClient(): AccessCloud {
+        return this.cloudClient;
+    }
+
     /**
      * 
      * @param file Name of File
