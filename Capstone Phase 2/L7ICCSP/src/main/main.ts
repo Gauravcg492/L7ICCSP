@@ -67,6 +67,18 @@ if (process.env.RELOAD) {
 }
 
 // Electron EndPoints
+ipcMain.on('getLoginUrl', async (event) => {
+    console.log("request to fetch login url");
+    //TODO get login url
+    const url = 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&response_type=code&client_id=508020035615-brjtvd9o37oldibs25m2oj0917s0smr7.apps.googleusercontent.com&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob';
+    shell.openExternal(url);
+});
+
+ipcMain.on('accessToken', async (event, access_token: string) => {
+    console.log("access_token received ",access_token);
+    event.sender.send('authStatus', true);
+});
+
 ipcMain.on('files', async (event, source) => {
     const fileObj = [];
     try {
@@ -112,7 +124,6 @@ ipcMain.on('uploadPath', async (event, filePath: string) => {
     console.log("initiating an upload to cloud for file ", filePath);
     const result = await operations.upload(filePath.replace(/\\/g, '/'), false, constants.ROOTDIR);
     event.sender.send('isUploadDone', result);
-
 });
 
 ipcMain.on('downloadFile', async (event, fileName, fileId) => {

@@ -1,6 +1,21 @@
 import { ipcRenderer, contextBridge } from 'electron';
 
 contextBridge.exposeInMainWorld('api', {
+    loginApi: {
+        requestLoginUrl() {
+            ipcRenderer.send('getLoginUrl');
+        },
+        sendAccessToken(access_token: string){
+            ipcRenderer.send('accessToken',access_token);
+        },
+        isAuthSuccess(){
+            return new Promise((resolve, _) => {
+                ipcRenderer.on('authStatus', (_: any, authDone: boolean) => {
+                    resolve(authDone);
+                });
+            });
+        }
+    },
     filesApi: {
         fetchFiles(source: string) {
             ipcRenderer.send('files', source);
