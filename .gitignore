@@ -13,3 +13,4 @@ count.json
 .idea
 test_data/
 .DS_Store/
+mochawesome-report/
