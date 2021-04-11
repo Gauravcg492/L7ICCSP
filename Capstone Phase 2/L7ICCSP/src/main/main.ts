@@ -9,6 +9,7 @@ import { AccessStorage } from "./code/storage/access_storage";
 import { constants } from "./code/utils/constants";
 import jsonfile from "jsonfile";
 import fs from 'fs';
+import { log } from './code/utils/logger';
 
 // TODO Create a singleton pattern class with createWindow and other methods enclosed in it to avoid using global variables
 let access_cloud: GoogleAccessCloud;
@@ -23,11 +24,11 @@ async function createWindow() {
     await tester.authorize();
     if (!tester.isToken()) {
         const it = rl[Symbol.asyncIterator]();
-        console.log("Access this url to get required code: ", tester.getAuthUrl());
+        log("Access this url to get required code: ", tester.getAuthUrl());
         const code = await it.next();
-        console.log("code: ", code);
+        log("code: ", code);
         await tester.getAccessToken(code['value']);
-        console.log("Token: ", tester.isToken());
+        log("Token: ", tester.isToken());
     }
     rl.close();
     access_cloud = new GoogleAccessCloud(tester.getDrive());
@@ -42,7 +43,7 @@ async function createWindow() {
     const storage: AccessStorage = new LocalAccessStorage();
     operations = new CloudOperations(access_cloud, tester, storage);
     await operations.setUser();
-    console.log("Operations Set")
+    log("Operations Set")
     const win = new BrowserWindow({
         width: 1440,
         height: 1080,
@@ -89,7 +90,7 @@ ipcMain.on('files', async (event, source) => {
             const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
             const downloadsPath = conf.downloadsPath;
             let files = fs.readdirSync(downloadsPath);
-            console.log("fetching list of files in ", downloadsPath);
+            log("fetching list of files in ", downloadsPath);
             for (let index = 0; index < files.length; index++) {
                 const stats = fs.statSync(`${downloadsPath}/${files[index]}`);
                 fileObj.push({
@@ -101,22 +102,22 @@ ipcMain.on('files', async (event, source) => {
         }
         event.sender.send('list', fileObj);
     } catch (err) {
-        console.log("Fetch Files error");
-        console.log(err);
+        log("Fetch Files error");
+        log(err);
         event.sender.send('list', []);
     }
 
 });
 
 ipcMain.on('uploadPath', async (event, filePath: string) => {
-    console.log("initiating an upload to cloud for file ", filePath);
+    log("initiating an upload to cloud for file ", filePath);
     const result = await operations.upload(filePath.replace(/\\/g, '/'), false, constants.ROOTDIR);
     event.sender.send('isUploadDone', result);
 
 });
 
 ipcMain.on('downloadFile', async (event, fileName, fileId) => {
-    console.log("initiating download from cloud for file ", fileName, ",id ", fileId);
+    log("initiating download from cloud for file ", fileName, ",id ", fileId);
     const conf = jsonfile.readFileSync(constants.CONFIG_PATH);
     const downloadsPath = conf.downloadsPath;
     const result = await operations.download(downloadsPath, fileName, fileId);
@@ -134,8 +135,8 @@ ipcMain.on('delete', async (event, source, sourceId) => {
             result = await access_cloud.deleteFile(sourceId);
         }
     } catch (err) {
-        console.log("delete error");
-        console.log(err);
+        log("delete error");
+        log(err);
         result = false;
     }
     event.sender.send('isDelete', result);
@@ -154,8 +155,8 @@ ipcMain.on('open', async (event, filename) => {
             throw new Error(err);
         }
     } catch (err) {
-        console.log("Open error");
-        console.log(err);
+        log("Open error");
+        log(err);
         result = false;
     }
     event.sender.send('isOpen', result);

@@ -7,6 +7,7 @@ import { constants } from './utils/constants';
 import { Tree } from './tree/tree';
 import { MerkleTree } from './tree/merkle_tree';
 import fs from 'fs';
+import { log } from './utils/logger';
 
 // Class which handles upload and download
 export class CloudOperations {
@@ -24,7 +25,7 @@ export class CloudOperations {
      */
     public async setUser(): Promise<void> {
         this.id = await this.authentication.getUserId();
-        console.log("id: ", this.id);
+        log("id: ", this.id);
     }
 
     /**
@@ -48,7 +49,7 @@ export class CloudOperations {
      * @returns 
      */
     async upload(file: string, isFolder = false, dir: string): Promise<boolean> {
-        console.log("upload called");
+        log("upload called");
         const promises = [];
         if (isFolder) {
             return await this.cloudClient.putFolder(file, dir);
@@ -59,9 +60,9 @@ export class CloudOperations {
             id: this.id,
             configPath: this.configPath
         }
-        console.log("Obj: ", obj);
+        log("Obj: ", obj);
         const rootHash = this.storage.getRootHash(obj);
-        console.log("RootHash");
+        log("RootHash");
         const merkleTree: Tree = new MerkleTree(rootHash, this.cloudClient);
         try {
             const fileArr = file.split("/");
@@ -85,8 +86,8 @@ export class CloudOperations {
                 }
             }
         } catch (err) {
-            console.log("CloudOperations.upload() error");
-            console.log(err);
+            log("CloudOperations.upload() error");
+            log(err);
         }
         return false;
     }
@@ -98,7 +99,7 @@ export class CloudOperations {
      * @returns 
      */
     async download(localDir: string, filename: string, fileId: string): Promise<boolean> {
-        console.log("Starting Download");
+        log("Starting Download");
         try {
             const result = await this.cloudClient.getFile(localDir, fileId);
             if (result.length > 0) {
@@ -110,17 +111,17 @@ export class CloudOperations {
                         filePath = `${localDir}/${Date.now()}${filename}`;
                     }
                     fs.renameSync(`${localDir}/${fileId}`, filePath);
-                    console.log("File is Authentic");
+                    log("File is Authentic");
                 } else {
-                    console.log("File is tampered");
+                    log("File is tampered");
                     fs.unlinkSync(result);
                     return false;
                 }
                 return true;
             }
         } catch (err) {
-            console.log("CloudOperations.download() error");
-            console.log(err);
+            log("CloudOperations.download() error");
+            log(err);
         }
         return false;
     }

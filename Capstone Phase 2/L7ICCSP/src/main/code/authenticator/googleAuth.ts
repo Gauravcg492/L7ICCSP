@@ -1,6 +1,7 @@
 import { Authentication } from "./authentication"
 import fs from 'fs';
 import { google } from 'googleapis';
+import { log } from "../utils/logger";
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/userinfo.profile'];
@@ -46,10 +47,10 @@ export class GoogleAuth implements Authentication {
         // Load client secrets from a local file.
         try {
             const credentials = JSON.parse(fs.readFileSync('credentials.json') as unknown as string);
-            // console.log("credentials");
+            // log("credentials");
             // Authorize a client with credentials, then call the Google Drive API.
             const { client_secret, client_id, redirect_uris } = credentials.installed;
-            // console.log("cred");
+            // log("cred");
             this.oAuth2Client = new google.auth.OAuth2(
                 client_id, client_secret, redirect_uris[0]);
 
@@ -62,8 +63,8 @@ export class GoogleAuth implements Authentication {
             this.oAuth2Client.setCredentials(JSON.parse(this.token as unknown as string));
             this.setDrive(this.oAuth2Client);
         } catch (err) {
-            console.log("authorize() Error");
-            console.log(err);
+            log("authorize() Error");
+            log(err);
         }
     }
 
@@ -80,8 +81,8 @@ export class GoogleAuth implements Authentication {
             this.setDrive(this.oAuth2Client);
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(this.token['tokens']));
         } catch(err) {
-            console.log("getAccessToken() Error");
-            console.log(err);
+            log("getAccessToken() Error");
+            log(err);
         }
     }
     /**
@@ -96,7 +97,7 @@ export class GoogleAuth implements Authentication {
                 return userInfo.data.id ?? "";
             }
         } catch (err) {
-            console.log(err);
+            log(err);
         }
         return "";
     }

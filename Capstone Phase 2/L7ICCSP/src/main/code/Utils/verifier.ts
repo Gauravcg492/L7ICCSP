@@ -2,6 +2,7 @@ import { parseNode } from './nodeParser'
 import { concat } from './hashes';
 import { AccessCloud } from '../cloud/access_cloud';
 import { constants } from './constants';
+import { log } from './logger';
 
 
 function chooseNode(searchArray: string[], hashFile: string): string {
@@ -19,7 +20,7 @@ export async function verify(hashFile: string, rootHash: string, cloudClient: Ac
     let filename_arr = parseNode(chooseNode(searchArray, hashFile));
     // let filename_arr = ['a', 'b', 'c', 'd', 'e', 'f'];   // Needs to be replaces
     // Retrieve Parent node details
-    console.log("filename: ", filename_arr);
+    log("filename: ", filename_arr);
     let tmp;
     let sibling;
     let curr_node = hashFile;
