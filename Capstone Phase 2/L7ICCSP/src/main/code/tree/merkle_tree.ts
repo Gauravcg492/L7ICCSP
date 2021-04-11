@@ -3,6 +3,7 @@ import { concat } from '../utils/hashes';
 import { AccessCloud } from '../cloud/access_cloud';
 import { constants } from '../utils/constants';
 import fs from 'fs';
+import { log } from '../utils/logger';
 
 // TODO change the method name of cloud client accordingly
 export class MerkleTree implements Tree {
@@ -94,7 +95,7 @@ export class MerkleTree implements Tree {
         let hashes = await this.cloudClient.searchFile(hash, this.TREEDIR);
         // let hashes = ["ab,ab,a,b,2,2", "a,ab,0,0,1,1", "b,ab,0,0,1,1"]
         // No root hash found in server (create new one)
-        console.log("GetNodeTreeTop: Hashes = ", hashes);
+        log("GetNodeTreeTop: Hashes = ", hashes);
         if (hashes.length === 0) {
             return this.getNode("");
         }
@@ -167,7 +168,7 @@ export class MerkleTree implements Tree {
         try{
             const result = await this.cloudClient.putFile(temp, this.TREEDIR);
             if (result) {
-                console.log("rename calling");
+                log("rename calling");
                 const rename  = await this.cloudClient.renameFile(tempName, this.nodeToHash(node));
                 if(!rename){
                     throw new Error("Rename failed");
@@ -177,8 +178,8 @@ export class MerkleTree implements Tree {
             }
             return true;
         } catch(err) {
-            console.log("putAndRename() error");
-            console.log(err);
+            log("putAndRename() error");
+            log(err);
         }
         return false;
     }
@@ -187,7 +188,7 @@ export class MerkleTree implements Tree {
         const promises = [];
 
         this.hashesToAdd.forEach(node => {
-            console.log("Adding node");
+            log("Adding node");
             const tempDir = "./temp/";
             const tempName = "merkleFile";
             const temp = tempDir + tempName;
@@ -201,8 +202,8 @@ export class MerkleTree implements Tree {
             const values = await Promise.all(promises);
             return values.every(Boolean);
         } catch (err) {
-            console.log("updateMerkle() error");
-            console.log(err);
+            log("updateMerkle() error");
+            log(err);
         }
         return false;
     }
@@ -221,7 +222,7 @@ export class MerkleTree implements Tree {
         // if there are nodes
         // get the right node to hash 
         const sibling = await this.getNodeTreeTop(this.rootNode.hash);
-        console.log("sibling: ", sibling);
+        log("sibling: ", sibling);
         // If no sibling found or tree fails 
         if (sibling.hash === "") {
             // TODO replace root node with new node deleting all tree entries or
@@ -237,7 +238,7 @@ export class MerkleTree implements Tree {
         // Create new Parent (this parent becomes child of sibling's parent)
         const newParent = this.getNode(concat(sibling.hash, newNode.hash));
         this.hashesToAdd.push(newParent);
-        console.log(newParent);
+        log(newParent);
         // Add the new parent in place of sibling
         if ('realPosition' in sibling) {
             // Update only real position of parent and update sibling and child's current pos
@@ -261,10 +262,10 @@ export class MerkleTree implements Tree {
             this.updateChildInfo(newParent, sibling);
             this.updateChildInfo(newParent, newNode);
             // Now sibling's parent can be modified to new parent along with new node
-            console.log("new ", newNode);
-            console.log("par ", newParent);
-            console.log("sib ", sibling);
-            console.log("sibparent ", siblingParent);
+            log("new ", newNode);
+            log("par ", newParent);
+            log("sib ", sibling);
+            log("sibparent ", siblingParent);
             this.childParentMap[newNode.hash] = newParent.hash;
             this.childParentMap[sibling.hash] = newParent.hash;
 
@@ -278,9 +279,9 @@ export class MerkleTree implements Tree {
                 // parent of root is root
                 while (parent.hash != child1.hash) {
                     // fetch parent's other sibling (if parent exists, then it will always have two children)
-                    console.log("Child position: ", child1.childPosition);
+                    log("Child position: ", child1.childPosition);
                     let child2 = this.getOtherChild(parent, child1);
-                    console.log("Child 2: ", child2);
+                    log("Child 2: ", child2);
                     // sibling's parent info will be changed
                     this.hashesToEdit[this.nodeToHash(child2)] = child2;
                     // sibling's old parent's child info will change

@@ -1,5 +1,6 @@
 import { AccessStorage, ConfigInput, HashInput } from "./access_storage";
 import jsonfile from "jsonfile";
+import { log } from "../utils/logger";
 
 // Implements AccessStorage Interface to access root hash in local file system
 export class LocalAccessStorage implements AccessStorage {
@@ -14,7 +15,7 @@ export class LocalAccessStorage implements AccessStorage {
                 return details[obj.id].hash;
             }
         } catch (error) {
-            console.log(error);
+            log(error);
         }
         return "";
     }
@@ -28,8 +29,8 @@ export class LocalAccessStorage implements AccessStorage {
             file = conf.rootHash.directory + conf.rootHash.filename;
             details = jsonfile.readFileSync(file);
         } catch (error) {
-            console.log("putRootHash() error");
-            console.log(error);
+            log("putRootHash() error");
+            log(error);
         }
         details[obj.id] = {
             hash: obj.hash,
@@ -38,7 +39,7 @@ export class LocalAccessStorage implements AccessStorage {
     }
 }
 
-// console.log("testing packages");
+// log("testing packages");
 // const some = new LocalAccessStorage();
 // const obj = {
 //     id: "id",
@@ -50,4 +51,4 @@ export class LocalAccessStorage implements AccessStorage {
 //     id: "id2",
 //     "configPath": 'config.json'
 // });
-// console.log(output)
+// log(output)

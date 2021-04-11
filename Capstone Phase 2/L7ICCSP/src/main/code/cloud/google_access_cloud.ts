@@ -2,6 +2,7 @@ import { AccessCloud } from "./access_cloud";
 import fs from 'fs';
 import { constants } from '../utils/constants';
 import { drive_v3 } from "googleapis";
+import { log } from "../utils/logger";
 
 
 export class GoogleAccessCloud implements AccessCloud {
@@ -38,22 +39,22 @@ export class GoogleAccessCloud implements AccessCloud {
             });
             if (res) {
                 const files = res.data.files;
-                console.log('Files:');
+                log('Files:');
                 if (files && files.length) {
                     files.map((file: any) => {
-                        console.log(`${file.name} (${file.id}) ${file.webViewLink} ${file.modifiedTime}`);
+                        log(`${file.name} (${file.id}) ${file.webViewLink} ${file.modifiedTime}`);
                         this.fileNameToId[file.name] = file.id;
                         fileNames.push(`${file.name},${file.id},${file.webViewLink},${file.modifiedTime}`);
                     });
                 } else {
-                    console.log("No files found");
+                    log("No files found");
                 }
             }
             else {
-                console.log("no response");
+                log("no response");
             }
         } catch (err) {
-            console.log(err);
+            log(err);
         }
         return fileNames;
     }
@@ -70,7 +71,7 @@ export class GoogleAccessCloud implements AccessCloud {
                 .then((driveResponse: any) => {
                     driveResponse.data
                         .on('end', () => {
-                            console.log("Download Complete");
+                            log("Download Complete");
                             resolve(dir + '/' + fileId);
                         })
                         .on('error', (err: any) => {
@@ -88,7 +89,7 @@ export class GoogleAccessCloud implements AccessCloud {
                         .pipe(dest);
                 })
                 .catch((err: any) => {
-                    console.log(err);
+                    log(err);
                     reject(err)
                 });
         });
@@ -97,14 +98,14 @@ export class GoogleAccessCloud implements AccessCloud {
             const results = await Promise.all(promises);
             return results[0];
         } catch (err) {
-            console.log("getFile() error");
-            console.log(err);
+            log("getFile() error");
+            log(err);
         }
         return "";
     }
 
     async putFile(this: GoogleAccessCloud, filePath: string, dir: string): Promise<boolean> {
-        console.log("Upload called")
+        log("Upload called")
         const folderIds = [];
         const folderId = this.getFolderId(dir);
         if (folderId.length > 0) {
@@ -127,24 +128,24 @@ export class GoogleAccessCloud implements AccessCloud {
                 fields: 'id'
             });
             if (res && res.data.id) {
-                console.log('File Id: ', res.data.id);
+                log('File Id: ', res.data.id);
                 this.fileNameToId[filename] = res.data.id;
-                console.log("ID", this.fileNameToId[filename]);
+                log("ID", this.fileNameToId[filename]);
             } else {
-                console.log("Upload failed");
+                log("Upload failed");
             }
             return true;
         } catch (error) {
-            console.log("putFile() error");
-            console.log(error);
+            log("putFile() error");
+            log(error);
         }
         return false;
     }
 
     async renameFile(this: GoogleAccessCloud, oldFileName: string, newFileName: string): Promise<boolean> {
-        console.log(`Rename Called for file: ${oldFileName} to change to ${newFileName}`);
+        log(`Rename Called for file: ${oldFileName} to change to ${newFileName}`);
         const fileId = this.fileNameToId[oldFileName];
-        console.log("Inside rename fileid: ", fileId);
+        log("Inside rename fileid: ", fileId);
         const body = { 'name': newFileName };
         const promises = [];
         promises.push(new Promise((resolve, reject) => {
@@ -154,7 +155,7 @@ export class GoogleAccessCloud implements AccessCloud {
             }, (err: any, res: any) => {
                 if (err) reject(err);
                 else {
-                    console.log('The name of the file has been updated!');
+                    log('The name of the file has been updated!');
                     resolve(res);
                 }
             })
@@ -163,8 +164,8 @@ export class GoogleAccessCloud implements AccessCloud {
             await Promise.all(promises);
             return true;
         } catch (err) {
-            console.log("renameFile() error");
-            console.log(err);
+            log("renameFile() error");
+            log(err);
         }
         return false;
     }
@@ -176,7 +177,7 @@ export class GoogleAccessCloud implements AccessCloud {
             queryString2 = `and '${this.getFolderId(dir)}' in parents`;
         }
         const queryString = queryString1 + queryString2;
-        console.log("query string: ", queryString);
+        log("query string: ", queryString);
         const filenames: string[] = [];
         try {
             const res = await this.drive.files.list({
@@ -186,16 +187,16 @@ export class GoogleAccessCloud implements AccessCloud {
             });
             const files = res.data.files;
             if (files && files.length) {
-                console.log('Files:', files, '\n');
+                log('Files:', files, '\n');
                 files.map((file: any) => {
                     this.fileNameToId[file.name] = file.id;
                     filenames.push(file.name);
                 });
             } else {
-                console.log('No files found.');
+                log('No files found.');
             }
         } catch (err) {
-            console.log(err);
+            log(err);
         }
         return filenames;
     }
@@ -221,7 +222,7 @@ export class GoogleAccessCloud implements AccessCloud {
                 return true;
             }
         } catch (err) {
-            console.log(err);
+            log(err);
         }
         return false;
     }
@@ -233,8 +234,8 @@ export class GoogleAccessCloud implements AccessCloud {
             });
             return true;
         } catch (err) {
-            console.log("Delete File error");
-            console.log(err)
+            log("Delete File error");
+            log(err)
         }
         return false;
     }

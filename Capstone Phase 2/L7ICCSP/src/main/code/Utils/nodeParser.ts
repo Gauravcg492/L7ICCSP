@@ -1,3 +1,4 @@
+import { log } from "./logger";
 
 export function parseNode(filename : String): string[]{
     // General Structure Of a file name
@@ -5,6 +6,6 @@ export function parseNode(filename : String): string[]{
     // return as an array
     var str = filename; 
     var splitted = str.split(",", 6); 
-    console.log(splitted);
+    log(splitted);
     return splitted;
 }
