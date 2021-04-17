@@ -1,9 +1,9 @@
-import { GoogleAuth } from "../main/code/authenticator/googleAuth";
+import { GoogleAuth } from "./authenticator/googleAuth";
 import readline from 'readline';
-import { GoogleAccessCloud } from "../main/code/cloud/google_access_cloud";
-import { LocalAccessStorage } from '../main/code/storage/local_access_storage';
-import { AccessStorage } from "../main/code/storage/access_storage";
-import { CloudOperations } from '../main/code/cloud_operations';
+import { GoogleAccessCloud } from "./cloud/google_access_cloud";
+import { LocalAccessStorage } from './storage/local_access_storage';
+import { AccessStorage } from "./storage/access_storage";
+import { CloudOperations } from './cloud_operations';
 import * as fs from "fs";
 
 export async function setUp(): Promise<CloudOperations> {

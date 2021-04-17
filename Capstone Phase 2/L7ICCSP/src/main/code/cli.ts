@@ -65,7 +65,7 @@ const main = async () => {
     // log('Upload done');
     // const fileId = access_cloud.getFileId('count.json');
     // const fileId = access_cloud.getFileId('webpack.common.js');
-    output = await operations.download("/Users/ar-gaurav.cg/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "details.json", fileId);
+    // output = await operations.download("/Users/ar-gaurav.cg/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "details.json", fileId);
     // operations.download("C:/Users/GAURAV C G/Desktop/Work/L7ICCSP/Capstone Phase 2/L7ICCSP/temp", "webpack.common.js", fileId);
     // let output = await access_cloud.searchFile('sample.txt', "");
     log(output);

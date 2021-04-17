@@ -13,7 +13,8 @@
     "dist": "electron-builder",
     "temp": "tsc && node build/main/code/utils/nodeParser.js",
     "watch": "webpack --config webpack.common.js --watch",
-    "hashTest": "tsc && node build/main/code/utils/hashes.js"
+    "hashTest": "tsc && node build/main/code/utils/hashes.js",
+    "benchmark": "tsc && node build/main/code/perform.js"
   },
   "keywords": [],
   "author": "PW21HBP02",
