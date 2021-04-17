@@ -20,7 +20,7 @@ async function runBenchMark(initialCount: number, fileSize: number): Promise<voi
             // Google upload
             let content = `Google Upload API`;
             console.time(content);
-            await operations.getCloudClient().putFile(filename, "");
+            await operations.getCloudClient().putFile(filename, 'test');
             console.timeEnd(content);
 
             // L7ICCSP
@@ -51,4 +51,4 @@ async function runBenchMark(initialCount: number, fileSize: number): Promise<voi
     }
 };
 
-runBenchMark(2, 5);
+runBenchMark(2, 10);

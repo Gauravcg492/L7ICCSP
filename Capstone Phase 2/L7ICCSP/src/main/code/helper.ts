@@ -30,6 +30,10 @@ export async function setUp(): Promise<CloudOperations> {
     if (files.length === 0) {
         await access_cloud.putFolder('merkle', "");
     }
+    files = await access_cloud.searchFile('test', "");
+    if (files.length === 0) {
+        await access_cloud.putFolder('test', "");
+    }
     const storage: AccessStorage = new LocalAccessStorage();
     const operations = new CloudOperations(access_cloud, tester, storage);
     await operations.setUser();
@@ -116,6 +120,8 @@ export async function cloudCleanUp(operations: CloudOperations) {
     let fileID = operations.getCloudClient().getFileId('L7ICCSP');
     await operations.getCloudClient().deleteFile(fileID);
     fileID = operations.getCloudClient().getFileId('merkle');
+    await operations.getCloudClient().deleteFile(fileID);
+    fileID = operations.getCloudClient().getFileId('test');
     await operations.getCloudClient().deleteFile(fileID);
     fs.writeFileSync('./details.json', "{}");
     const files = fs.readdirSync('./test_data');
