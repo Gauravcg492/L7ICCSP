@@ -1,4 +1,5 @@
 import { ipcRenderer, contextBridge } from 'electron';
+import { log } from './code/utils/logger';
 
 contextBridge.exposeInMainWorld('api', {
     loginApi: {
@@ -58,7 +59,7 @@ contextBridge.exposeInMainWorld('api', {
             });
         },
         openFile(filename: string) {
-            console.log("Filename: ", filename);
+            log("Filename: ", filename);
             ipcRenderer.send('open', filename);
         },
         isFileOpened() {

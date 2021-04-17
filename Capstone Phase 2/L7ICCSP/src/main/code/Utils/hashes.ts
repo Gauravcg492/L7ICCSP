@@ -1,15 +1,16 @@
 import CryptoJS from 'crypto-js';
-import * as fs from "fs";
+import { log } from './logger';
 const { Worker, isMainThread, parentPort } = require('worker_threads');
 
 // Returns the SHA256 hash of a given file
 export async function sha256(file : string) : Promise<string>{
-    console.log("entering worker");
+    log("entering worker");
     const worker = new Worker(__dirname + "/hashWorker.js");
-    console.log("Return to Parent");
+    log("Return to Parent");
     let x = new Promise((resolve, _) => {
         worker.on('message', (msg:string) => {
-            console.log("Inside worker message : " + msg);
+            log("Inside worker message : " + msg);
+            worker.terminate();
             resolve(msg);
         })
     });
@@ -23,12 +24,13 @@ export async function sha256(file : string) : Promise<string>{
 }
 
 export async function sha256V2(filepath : string,filename : string,userId : string) : Promise<string>{
-    console.log("entering worker");
+    log("entering worker");
     const worker = new Worker(__dirname + "/hashWorker.js");
-    console.log("Return to Parent");
+    log("Return to Parent");
     let x = new Promise((resolve, _) => {
         worker.on('message', (msg:string) => {
-            console.log("Inside worker message : " + msg);
+            log("Inside worker message : " + msg);
+            worker.terminate();
             resolve(msg);
         })
     });
@@ -74,10 +76,10 @@ export function concat(s1: string, s2: string){
     else{
         s = s1.concat(s2.toString());
     }
-    console.log(s);
+    log(s);
     return CryptoJS.SHA256(s).toString(CryptoJS.enc.Hex);
 }
 
 // let a = "a9df5381f1d9c454ae92e83afe5ff536bcef949254e61fa8f2ff3721e7ee6611";
 // let b = "bff0d3f4caf91b0ec6745c12f6435b2344958881e8cfc4bd450b7afb2fa18be0";
-// console.log(concat(b, a));
+// log(concat(b, a));
