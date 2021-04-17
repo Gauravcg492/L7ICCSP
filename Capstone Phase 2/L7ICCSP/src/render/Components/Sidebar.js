@@ -25,6 +25,10 @@ const downloader = () => {
   return <ListFiles source="download" title="Downloads" />;
 };
 
+const loginPage = () => {
+  return <LoadLoginPage/>;
+}
+
 function Sidebar() {
   return (
     <HashRouter>

@@ -13,6 +13,10 @@ import fs from 'fs';
 // TODO Create a singleton pattern class with createWindow and other methods enclosed in it to avoid using global variables
 let access_cloud: GoogleAccessCloud;
 let operations: CloudOperations;
+var loggedIn = true;
+
+var win: BrowserWindow;
+var loginWin: BrowserWindow;
 
 async function createWindow() {
     let tester = new GoogleAuth();
@@ -43,20 +47,35 @@ async function createWindow() {
     operations = new CloudOperations(access_cloud, tester, storage);
     await operations.setUser();
     console.log("Operations Set")
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         width: 1440,
         height: 1080,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
             preload: path.join(__dirname, 'preload.js'),
-        }
+        },
+        show: false
     });
     win.loadFile('index.html');
     win.webContents.on('new-window', (e, url) => {
         e.preventDefault();
         shell.openExternal(url);
     });
+    loginWin = new BrowserWindow(
+        {
+            width: 720,
+            height: 560,
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+                preload: path.join(__dirname, 'preload.js'),
+            },
+            show: true
+        }
+    );
+    
+    loginWin.loadFile('login.html')
 }
 
 if (process.env.RELOAD) {
@@ -76,7 +95,15 @@ ipcMain.on('getLoginUrl', async (event) => {
 
 ipcMain.on('accessToken', async (event, access_token: string) => {
     console.log("access_token received ",access_token);
-    event.sender.send('authStatus', true);
+    loginWin.hide()
+    win.show()
+    loggedIn = true;
+    event.sender.send('authStatus', loggedIn);
+});
+
+ipcMain.on('getAuthStatus', async (event) => {
+    console.log("logged in? ",loggedIn);
+    event.sender.send('authStatus', loggedIn);
 });
 
 ipcMain.on('files', async (event, source) => {

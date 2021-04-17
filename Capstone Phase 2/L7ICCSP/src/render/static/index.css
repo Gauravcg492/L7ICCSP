@@ -1,6 +1,6 @@
 body {
   font-family: "Lato", sans-serif;
-  background-color: rgb(241, 234, 234);
+  background-color: rgb(53, 51, 51);
 }
 
 .logo p {
@@ -8,6 +8,60 @@ body {
   font-family: "", "Courier New", monospace;
   font-size: 30px;
   font-weight: bold;
+}
+
+.logoMega {
+  color: rgb(10, 255, 55);
+  font-family: "", "Courier New", monospace;
+  font-size: 100px;
+  text-align: center;
+  font-weight: bold;
+  margin: 30px;
+}
+
+.inputBox {
+  width: 45%;
+  font-family: "", "Courier New", monospace;
+  height: 35px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.loginDiv p{
+  text-align: center;
+  color: white;
+  font-family: "", "Courier New", monospace;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.loginDiv{
+  margin-top:auto;
+  margin-bottom:auto;
+  text-align:center;
+  color: rgb(199, 235, 206);
+  font-family: "", "Courier New", monospace;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.loginDiv_access{
+  padding: 10px;
+  margin: 3px;
+  background-color: blue;
+  font-family: "", "Courier New", monospace;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
+.loginDiv_submit{
+  align-self: auto;
+  color: green;
+  font-family: "", "Courier New", monospace;
+  font-weight: bold;
+  font-size: 35px;
+  height: 40px;
 }
 
 .pageHeading {

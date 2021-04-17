@@ -14,6 +14,10 @@ contextBridge.exposeInMainWorld('api', {
                     resolve(authDone);
                 });
             });
+        },
+        getAuthStatus(){
+            console.log("in getauthstatus");
+            ipcRenderer.send('getAuthStatus');
         }
     },
     filesApi: {
