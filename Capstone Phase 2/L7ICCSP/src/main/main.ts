@@ -11,63 +11,107 @@ import jsonfile from "jsonfile";
 import fs from 'fs';
 import { log } from './code/utils/logger';
 
-// TODO Create a singleton pattern class with createWindow and other methods enclosed in it to avoid using global variables
+// TODO handle global variables(singleton class)
 let access_cloud: GoogleAccessCloud;
 let operations: CloudOperations;
+var loggedIn = false;
+let tester: GoogleAuth;
+
+var win: BrowserWindow;
+var loginWin: BrowserWindow;
 
 async function createWindow() {
-    let tester = new GoogleAuth();
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
+    tester = new GoogleAuth();
+    // const rl = readline.createInterface({
+    //     input: process.stdin,
+    //     output: process.stdout,
+    // });
     await tester.authorize();
-    if (!tester.isToken()) {
-        const it = rl[Symbol.asyncIterator]();
-        log("Access this url to get required code: ", tester.getAuthUrl());
-        const code = await it.next();
-        log("code: ", code);
-        await tester.getAccessToken(code['value']);
-        log("Token: ", tester.isToken());
-    }
-    rl.close();
-    access_cloud = new GoogleAccessCloud(tester.getDrive());
-    let files = await access_cloud.searchFile('L7ICCSP', "");
-    if (files.length === 0) {
-        await access_cloud.putFolder('L7ICCSP', "");
-    }
-    files = await access_cloud.searchFile('merkle', "");
-    if (files.length === 0) {
-        await access_cloud.putFolder('merkle', "");
-    }
-    const storage: AccessStorage = new LocalAccessStorage();
-    operations = new CloudOperations(access_cloud, tester, storage);
-    await operations.setUser();
-    log("Operations Set")
-    const win = new BrowserWindow({
+    // if (!tester.isToken()) {
+    //     // const it = rl[Symbol.asyncIterator]();
+    //     log("Access this url to get required code: ", tester.getAuthUrl());
+    //     const code = await it.next();
+    //     log("code: ", code);
+    //     await tester.getAccessToken(code['value']);
+    //     log("Token: ", tester.isToken());
+    // }
+    // rl.close();
+
+    console.log("Operations Set")
+    win = new BrowserWindow({
         width: 1440,
         height: 1080,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
             preload: path.join(__dirname, 'preload.js'),
-        }
+        },
+        show: isLoggedIn()
     });
     win.loadFile('index.html');
     win.webContents.on('new-window', (e, url) => {
         e.preventDefault();
         shell.openExternal(url);
     });
+    loginWin = new BrowserWindow(
+        {
+            width: 720,
+            height: 1080,
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+                preload: path.join(__dirname, 'preload.js'),
+            },
+            show: !isLoggedIn()
+        }
+    );
+    loginWin.loadFile('login.html')
 }
 
 if (process.env.RELOAD) {
     require('electron-reloader')(module, {
         debug: true,
-        ignore: ['temp|[/\\]\./;', 'test_data|[/\\]\./;','details.json']
+        ignore: ['temp|[/\\]\./;', 'test_data|[/\\]\./;', 'details.json']
     });
 }
 
 // Electron EndPoints
+ipcMain.on('openLoginUrlOnBrowser', async (event) => {
+    console.log("request to fetch login url");
+    //TODO get login url
+    //const login = getLoginUrl()
+    // const url = 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&response_type=code&client_id=508020035615-brjtvd9o37oldibs25m2oj0917s0smr7.apps.googleusercontent.com&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob';
+    const url = tester.getAuthUrl();
+    shell.openExternal(url);
+});
+
+ipcMain.on('storeAccessToken', async (event, access_token: string) => {
+    console.log("access_token received ", access_token);
+    //TODO
+    //storeAccessToken(access_token);
+    await tester.getAccessToken(access_token);
+    if (isLoggedIn()) {
+        access_cloud = new GoogleAccessCloud(tester.getDrive());
+        let files = await access_cloud.searchFile('L7ICCSP', "");
+        if (files.length === 0) {
+            await access_cloud.putFolder('L7ICCSP', "");
+        }
+        files = await access_cloud.searchFile('merkle', "");
+        if (files.length === 0) {
+            await access_cloud.putFolder('merkle', "");
+        }
+        const storage: AccessStorage = new LocalAccessStorage();
+        operations = new CloudOperations(access_cloud, tester, storage);
+        await operations.setUser();
+        toggleWindow();
+    }
+    event.sender.send('loginStatus', isLoggedIn());
+});
+
+ipcMain.on('isUserLoggedIn', async (event) => {
+    event.sender.send('loginStatus', isLoggedIn());
+});
+
 ipcMain.on('files', async (event, source) => {
     const fileObj = [];
     try {
@@ -113,7 +157,6 @@ ipcMain.on('uploadPath', async (event, filePath: string) => {
     log("initiating an upload to cloud for file ", filePath);
     const result = await operations.upload(filePath.replace(/\\/g, '/'), false, constants.ROOTDIR);
     event.sender.send('isUploadDone', result);
-
 });
 
 ipcMain.on('downloadFile', async (event, fileName, fileId) => {
@@ -161,6 +204,10 @@ ipcMain.on('open', async (event, filename) => {
     }
     event.sender.send('isOpen', result);
 });
+//TODO logout
+// 1.Remove token.json
+// 2.run "await tester.authorize()"
+// 3. ToggleWindow
 
 app.whenReady().then(createWindow)
 
@@ -175,3 +222,18 @@ app.on('activate', async () => {
         createWindow();
     }
 })
+
+
+function isLoggedIn() {
+    return tester.isToken();
+}
+
+function toggleWindow() {
+    if (win.isVisible()) {
+        win.hide();
+        loginWin.show();
+    } else {
+        loginWin.hide();
+        win.show();
+    }
+}

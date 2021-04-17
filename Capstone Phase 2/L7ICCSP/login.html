@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="./src/render/static/index.css">
+    <script src="./src/render/Components/Login.js"></script> 
+    <meta charset="UTF-8">
+    <title>L7ICCSP login</title>
+</head>
+
+<body>
+        <div class="logoMega">
+          <p>
+            <i class="fas fa-exchange-alt"></i>
+            <b> L7ICCSP</b>
+          </p>
+        </div>
+        <br />
+        <div class="loginDiv">
+          <button class="loginDiv_access" onclick="oauthPrompt()"><i class="fab fa-google-drive"></i> Grant Access to Google Drive</button>
+          <br />
+          <p>Paste access token below</p>
+          <input id="accesstokeninput" class="inputBox" />
+          <button class="loginDiv_submit" onClick="storeAccessToken()"> <FontAwesomeIcon icon={faCaretRight} />></button>
+        </div>
+      </div>
+</body>
+
+</html>

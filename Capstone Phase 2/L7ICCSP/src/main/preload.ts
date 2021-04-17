@@ -2,6 +2,21 @@ import { ipcRenderer, contextBridge } from 'electron';
 import { log } from './code/utils/logger';
 
 contextBridge.exposeInMainWorld('api', {
+    loginApi: {
+        openLoginUrlOnBrowser() {
+            ipcRenderer.send('openLoginUrlOnBrowser');
+        },
+        sendAccessToken(access_token: string){
+            ipcRenderer.send('storeAccessToken',access_token);
+        },
+        getLoginStatus(){
+            return new Promise((resolve, _) => {
+                ipcRenderer.on('loginStatus', (_: any, isLoggedIn: boolean) => {
+                    resolve(isLoggedIn);
+                });
+            });
+        }
+    },
     filesApi: {
         fetchFiles(source: string) {
             ipcRenderer.send('files', source);

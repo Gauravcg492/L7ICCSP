@@ -10,6 +10,7 @@ import {
 import { List, ListItem } from "@material-ui/core";
 import UploadButton from "./UploadButton";
 import ListFiles from "./ListFile";
+import Logout from "./Logout";
 
 const uploader = () => {
   return <UploadButton />;
@@ -24,6 +25,10 @@ const uploaderFiles = () => {
 const downloader = () => {
   return <ListFiles source="download" title="Downloads" />;
 };
+
+const loginPage = () => {
+  return <LoadLoginPage/>;
+}
 
 function Sidebar() {
   return (
@@ -69,6 +74,7 @@ function Sidebar() {
             <Route exact path="/uploads" children={uploaderFiles} />
             <Route exact path="/downloads" children={downloader} />
           </Switch>
+          <Logout/>
         </div>
       </div>
     </HashRouter>
