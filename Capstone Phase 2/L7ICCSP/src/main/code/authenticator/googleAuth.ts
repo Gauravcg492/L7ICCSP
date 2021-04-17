@@ -64,6 +64,7 @@ export class GoogleAuth implements Authentication {
             this.setDrive(this.oAuth2Client);
         } catch (err) {
             log("authorize() Error");
+            this.token = "";
             log(err);
         }
     }
