@@ -2,22 +2,18 @@ import { ipcRenderer, contextBridge } from 'electron';
 
 contextBridge.exposeInMainWorld('api', {
     loginApi: {
-        requestLoginUrl() {
-            ipcRenderer.send('getLoginUrl');
+        openLoginUrlOnBrowser() {
+            ipcRenderer.send('openLoginUrlOnBrowser');
         },
         sendAccessToken(access_token: string){
-            ipcRenderer.send('accessToken',access_token);
+            ipcRenderer.send('storeAccessToken',access_token);
         },
-        isAuthSuccess(){
+        getLoginStatus(){
             return new Promise((resolve, _) => {
-                ipcRenderer.on('authStatus', (_: any, authDone: boolean) => {
-                    resolve(authDone);
+                ipcRenderer.on('loginStatus', (_: any, isLoggedIn: boolean) => {
+                    resolve(isLoggedIn);
                 });
             });
-        },
-        getAuthStatus(){
-            console.log("in getauthstatus");
-            ipcRenderer.send('getAuthStatus');
         }
     },
     filesApi: {

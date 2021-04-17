@@ -13,7 +13,7 @@ import fs from 'fs';
 // TODO Create a singleton pattern class with createWindow and other methods enclosed in it to avoid using global variables
 let access_cloud: GoogleAccessCloud;
 let operations: CloudOperations;
-var loggedIn = true;
+var loggedIn = false;
 
 var win: BrowserWindow;
 var loginWin: BrowserWindow;
@@ -55,7 +55,7 @@ async function createWindow() {
             contextIsolation: true,
             preload: path.join(__dirname, 'preload.js'),
         },
-        show: false
+        show: isLoggedIn()
     });
     win.loadFile('index.html');
     win.webContents.on('new-window', (e, url) => {
@@ -65,16 +65,15 @@ async function createWindow() {
     loginWin = new BrowserWindow(
         {
             width: 720,
-            height: 560,
+            height: 1080,
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
                 preload: path.join(__dirname, 'preload.js'),
             },
-            show: true
+            show: !isLoggedIn()
         }
     );
-    
     loginWin.loadFile('login.html')
 }
 
@@ -86,24 +85,26 @@ if (process.env.RELOAD) {
 }
 
 // Electron EndPoints
-ipcMain.on('getLoginUrl', async (event) => {
+ipcMain.on('openLoginUrlOnBrowser', async (event) => {
     console.log("request to fetch login url");
     //TODO get login url
+    //const login = getLoginUrl()
     const url = 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&response_type=code&client_id=508020035615-brjtvd9o37oldibs25m2oj0917s0smr7.apps.googleusercontent.com&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob';
     shell.openExternal(url);
 });
 
-ipcMain.on('accessToken', async (event, access_token: string) => {
+ipcMain.on('storeAccessToken', async (event, access_token: string) => {
     console.log("access_token received ",access_token);
-    loginWin.hide()
-    win.show()
-    loggedIn = true;
-    event.sender.send('authStatus', loggedIn);
+    //TODO
+    //storeAccessToken(access_token);
+    if(isLoggedIn()){
+        toggleWindow();
+    }
+    event.sender.send('loginStatus', isLoggedIn());
 });
 
-ipcMain.on('getAuthStatus', async (event) => {
-    console.log("logged in? ",loggedIn);
-    event.sender.send('authStatus', loggedIn);
+ipcMain.on('isUserLoggedIn', async (event) => {
+    event.sender.send('loginStatus', isLoggedIn());
 });
 
 ipcMain.on('files', async (event, source) => {
@@ -212,3 +213,18 @@ app.on('activate', async () => {
         createWindow();
     }
 })
+
+
+function isLoggedIn(){
+    return true;
+}
+
+function toggleWindow(){
+    if(win.isVisible()){
+        win.hide();
+        loginWin.show();
+    }else{
+        loginWin.hide();
+        win.show();
+    }
+}

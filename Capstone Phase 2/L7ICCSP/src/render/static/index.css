@@ -3,6 +3,19 @@ body {
   background-color: rgb(53, 51, 51);
 }
 
+.logout {
+  padding: 10px;
+  margin: 3px;
+  background-color:rgb(240, 128, 128);
+  font-family: "", "Courier New", monospace;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .logo p {
   color: rgb(10, 255, 55);
   font-family: "", "Courier New", monospace;
