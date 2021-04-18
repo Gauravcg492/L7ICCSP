@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld('api', {
                     resolve(isLoggedIn);
                 });
             });
+        },
+        doLogout(){
+            ipcRenderer.send('logout');
         }
     },
     filesApi: {

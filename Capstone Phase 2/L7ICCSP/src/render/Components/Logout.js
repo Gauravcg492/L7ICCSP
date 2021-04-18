@@ -5,8 +5,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 function Logout(){
+    const logoutApp = () => {
+        window.api.loginApi.doLogout();
+    }
     return(
-        <button className="logout"><FontAwesomeIcon icon={faSignOutAlt}/>logout</button>
+        <button className="logout" onClick={logoutApp}><FontAwesomeIcon icon={faSignOutAlt}/>logout</button>
     )
 }
 
