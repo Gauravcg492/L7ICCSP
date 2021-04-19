@@ -6,6 +6,7 @@ import {
   CloudDownloadTwoTone,
 } from "@material-ui/icons";
 import FileIcon from "./FileIcon"
+
 /**
  *
  * @param {name,id,date,url,deleteHandler,downloadHandler} props
@@ -24,53 +25,65 @@ const fileRow = (props) => {
   };
 
   return (
-    <Card className="matCard">
-      <InsertDriveFile
-        fontSize="large"
-        style={{ marginLeft: "1%", marginRight: "1%" }}
-      />
-      <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.name}</p>
-      <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.date}</p>
-      <Button
-        variant="outlined"
-        color="primary"
-        href={props.url}
-        target="_blank"
-        style={{
-          marginLeft: "auto",
-          marginRight: "1%",
-          textTransform: "none",
-        }}
-      >
-        Open In Drive
-      </Button>
-      <Button
-        variant="outlined"
-        startIcon={<Delete />}
-        style={{
-          marginLeft: "1%",
-          marginRight: "1%",
-          textTransform: "none",
-        }}
-        onClick={deleteFileRow}
-      >
-        Delete
-      </Button>
-      <Button
-        variant="outlined"
-        startIcon={<CloudDownloadTwoTone />}
-        style={{
-          marginLeft: "1%",
-          marginRight: "1%",
-          textTransform: "none",
-        }}
-        disabled={loading}
-        onClick={downloadFile}
-      >
-        Download
-      </Button>
-      {loading && <CircularProgress size={24} style={{marginLeft:'1%', marginRight:'1%'}} />}
-    </Card>
+    // <Card className="matCard">
+    //   <InsertDriveFile
+    //     fontSize="large"
+    //     style={{ marginLeft: "1%", marginRight: "1%" }}
+    //   />
+    //   <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.name}</p>
+    //   <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.date}</p>
+    //   <Button
+    //     variant="outlined"
+    //     color="primary"
+    //     href={props.url}
+    //     target="_blank"
+    //     style={{
+    //       marginLeft: "auto",
+    //       marginRight: "1%",
+    //       textTransform: "none",
+    //     }}
+    //   >
+    //     Open In Drive
+    //   </Button>
+    //   <Button
+    //     variant="outlined"
+    //     startIcon={<Delete />}
+    //     style={{
+    //       marginLeft: "1%",
+    //       marginRight: "1%",
+    //       textTransform: "none",
+    //     }}
+    //     onClick={deleteFileRow}
+    //   >
+    //     Delete
+    //   </Button>
+    //   <Button
+    //     variant="outlined"
+    //     startIcon={<CloudDownloadTwoTone />}
+    //     style={{
+    //       marginLeft: "1%",
+    //       marginRight: "1%",
+    //       textTransform: "none",
+    //     }}
+    //     disabled={loading}
+    //     onClick={downloadFile}
+    //   >
+    //     Download
+    //   </Button>
+    //   {loading && <CircularProgress size={24} style={{marginLeft:'1%', marginRight:'1%'}} />}
+    // </Card>
+    <div className="filerowDownload">
+      <FileIcon filename={props.name}/>
+      <div className="fileinfo">
+        <p className="filename">{props.name}<br/>
+        <span className="filedate">{props.date}</span></p>
+      </div>
+      <div>
+      <button onClick={downloadFile}><Launch/></button>
+      <button onClick={deleteFileRow}><Delete/></button>
+      <button href={props.url}><CloudDownloadTwoTone /></button>
+      </div>
+    </div>
   );
 };
 

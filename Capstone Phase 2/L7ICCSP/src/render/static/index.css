@@ -1,26 +1,79 @@
 body {
   font-family: "Lato", sans-serif;
-  background-color: rgb(53, 51, 51);
+  background-color: black;
+  /* background-color: rgb(53, 51, 51); */
+}
+
+#root {
+  display: block;
+}
+
+.filerowDownload {
+  display: flex; 
+  font-family: "Arial";
+  border: 2px solid grey;
+  border-radius: 8px;
+  padding: 5px;
+  align-content: center;
+  margin: 5px;
+  min-width: 530px;
+  background-color: rgb(237, 241, 241);
+  float: left;
+}
+
+.filerowDownload div {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 2px;
+}
+
+.filerowDownload button {
+  margin: 5px;
+}
+
+.fileinfo {
+  width: 80%;
+  margin-left: 10px;
+}
+
+.filename {
+  font-size: 22px;
+  font-family: "Noto Serif";
+  font-weight: bold;
+}
+.filedate {
+  font-size: 15px;
+  font-weight:lighter;
 }
 
 .logout {
   padding: 10px;
-  margin: 20px;
+  margin: 15px;
   color:rgb(163, 27, 27);
   font-family: "", "Courier New", monospace;
   font-weight: bold;
   border-radius: 5px;
-  font-size: 20px;
+  font-size: 17px;
   position: absolute;
   top: 0;
   right: 0;
 }
-
+.logo {
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 .logo p {
   color: rgb(10, 255, 55);
   font-family: "", "Courier New", monospace;
-  font-size: 30px;
+  font-size: 45px;
   font-weight: bold;
+  padding: 10px;
+}
+.logo span {
+  font-size: 18px;
+  font-family: "Noto Serif";
+  color: white;
 }
 
 .logoMega {
@@ -29,6 +82,14 @@ body {
   font-size: 75px;
   text-align: center;
   font-weight: bold;
+}
+
+
+.logoMega span {
+  font-size: 35px;
+  font-family: "Noto Serif";
+  color: rgb(126, 185, 138);
+  margin-top: 10px;
 }
 
 .inputBox {
@@ -42,7 +103,7 @@ body {
   text-align: center;
   margin-top: 15px;
   margin-bottom: 10px;
-  color: white;
+  color: rgb(84, 102, 88);
   font-family: "", "Courier New", monospace;
   font-size: 22px;
 }
@@ -100,24 +161,25 @@ td {
 
 .sidenav {
   height: 100%;
-  width: 20%;
+  width: 300px;
   position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #000;
+  background-color: rgb(54, 54, 54);
   overflow-x: hidden;
-  padding-top: 20px;
-  box-shadow: 5px 2px #888888;
+
 }
 
 .sidenav a {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
-  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   color: #818181;
   display: block;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
 }
 
 .sidenav a:hover {
@@ -129,7 +191,7 @@ td {
 }
 
 .main {
-  margin-left: 20.5%; /* Same as the width of the sidenav */
+  margin-left: 300px; /* Same as the width of the sidenav */
   padding: 0px 10px;
   height: 100%;
 }
@@ -140,13 +202,16 @@ td {
   height: 100%;
   width: 100%;
   position: fixed;
+  background-color: black;
 }
 
-.matPaper {
-  height: 80%;
-  width: 70%;
+.filecontainer {
+  height: 85%;
+  width: 73%;
+  min-width:500;
   align-self: center;
   overflow-y: auto;
+  padding: 15px;
 }
 
 .matCard {
@@ -158,7 +223,7 @@ td {
   float: left;
   clear: left;
 }
-.navlist {
+.navlistitem {
   padding: 1px;
 }
 
@@ -212,4 +277,49 @@ td {
 
   padding-top: 12px;
   color: #6e7a7f;
+}
+
+
+
+/*SNACKBAR CSS*/
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
 }

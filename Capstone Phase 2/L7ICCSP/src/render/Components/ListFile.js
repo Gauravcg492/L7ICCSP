@@ -3,6 +3,10 @@ import { Paper, Card, Avatar, IconButton } from "@material-ui/core";
 import { Refresh } from "@material-ui/icons";
 import FileRow from "./FileRow";
 import FileRowDownloads from "./FileRowDownloads";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faCloud
+} from "@fortawesome/free-solid-svg-icons";
 
 /**
  *
@@ -110,21 +114,19 @@ const listFiles = (props) => {
 
   return (
     <div className="showFiles">
-      <Paper className="matPaper">
-        <Card className="matCard">
-          <Avatar style={{ marginLeft: "1%", marginRight: "1%" }}>
-            {props.title[0]}
-          </Avatar>
-          <p className="paperHeading">{props.title}</p>
+      <div className="filescontainer">
+        <div className="filesource">
+        
+          <p className="paperHeading"><FontAwesomeIcon icon={faCloud} /> {props.title}</p>
           <IconButton
             style={{ marginLeft: "auto" }}
             onClick={onRequestForFilesList}
           >
             <Refresh />
           </IconButton>
-        </Card>
+        </div>
         {displayFiles()}
-      </Paper>
+      </div>
     </div>
   );
 };

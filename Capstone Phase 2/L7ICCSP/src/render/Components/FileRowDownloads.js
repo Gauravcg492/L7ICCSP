@@ -18,35 +18,17 @@ function FileRowDownloads(props) {
     props.openHandler(props.name);
   };
   return (
-    <Card className="matCard">
+    <div className="filerowDownload">
       <FileIcon filename={props.name}/>
-      <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.name}</p>
-      <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.date}</p>
-      <Button
-        variant="outlined"
-        startIcon={<Delete />}
-        style={{
-          marginLeft: "auto",
-          marginRight: "1%",
-          textTransform: "none",
-        }}
-        onClick={deleteFileRow}
-      >
-        Delete
-      </Button>
-      <Button
-        variant="outlined"
-        startIcon={<Launch />}
-        style={{
-          marginLeft: "1%",
-          marginRight: "1%",
-          textTransform: "none",
-        }}
-        onClick={openFile}
-      >
-        Open
-      </Button>
-    </Card>
+      <div className="fileinfo">
+        <p className="filename">{props.name}<br/> 
+        <span className="filedate">{props.date}</span></p>
+      </div>
+      <div>
+      <button onClick={deleteFileRow}><Delete/></button>
+      <button onClick={openFile}><Launch/></button>
+      </div>
+    </div>
   );
 }
 

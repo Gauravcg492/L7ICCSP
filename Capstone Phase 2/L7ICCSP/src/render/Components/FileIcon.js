@@ -34,11 +34,11 @@ function FileIcon({filename}){
         colour="black"
     }else if(filename.endsWith(".mp4")||filename.endsWith(".avi")||filename.endsWith(".mkv")){
         fileicon=faFileVideo
-        colour="yellow"
+        colour="orange"
     }
     return(
-        <div style={{padding:'5px'}}>
-        <FontAwesomeIcon icon={fileicon} color={colour} size='2x'/>
+        <div>
+        <FontAwesomeIcon icon={fileicon} color={colour} size='4x'/>
         </div>
     )
 }
