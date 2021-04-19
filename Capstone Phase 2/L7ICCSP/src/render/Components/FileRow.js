@@ -5,7 +5,7 @@ import {
   Delete,
   CloudDownloadTwoTone,
 } from "@material-ui/icons";
-
+import FileIcon from "./FileIcon"
 /**
  *
  * @param {name,id,date,url,deleteHandler,downloadHandler} props

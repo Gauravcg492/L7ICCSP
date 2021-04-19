@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Button } from "@material-ui/core";
 import { InsertDriveFile, Delete, Launch } from "@material-ui/icons";
 
+import FileIcon from "./FileIcon"
 /**
  *
  * @param {name,id,date,deleteHandler,openHandler} props
@@ -18,10 +19,7 @@ function FileRowDownloads(props) {
   };
   return (
     <Card className="matCard">
-      <InsertDriveFile
-        fontSize="large"
-        style={{ marginLeft: "1%", marginRight: "1%" }}
-      />
+      <FileIcon filename={props.name}/>
       <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.name}</p>
       <p style={{ marginLeft: "1%", marginRight: "1%" }}>{props.date}</p>
       <Button
