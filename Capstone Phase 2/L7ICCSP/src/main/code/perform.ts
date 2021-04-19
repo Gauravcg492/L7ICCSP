@@ -38,12 +38,15 @@ async function runBenchMark(initialCount: number, fileSize: number): Promise<voi
             await operations.getCloudClient().getFile('test_data', fileId);
             console.timeEnd(content);
             fs.renameSync(`test_data/${fileId}`, `test_data/temp`);
+            console.log("File size downloaded: ", (await fs.promises.stat(`test_data/temp`)).size)
             // L7ICCSP
             content = `\nL7ICCSP Download API`;
             console.time(content);
             await operations.download(`test_data`, `file${initialCount + 1}`, fileId);
             console.timeEnd(content);
-            cloudCleanUp(operations);
+            console.log("File size downloaded: ", (await fs.promises.stat(`test_data/file${initialCount+1}`)).size)
+            await cloudCleanUp(operations);
+            console.log("===".repeat(20))
         }
     } catch (err) {
         console.log("Benchmark error");
@@ -51,4 +54,31 @@ async function runBenchMark(initialCount: number, fileSize: number): Promise<voi
     }
 };
 
-runBenchMark(10, 200);
+async function runBenchmarks() {
+    await runBenchMark(0, 1);
+    await runBenchMark(0, 10);
+    await runBenchMark(0, 50);
+    await runBenchMark(0, 100);
+    await runBenchMark(0, 200);
+    
+    // await runBenchMark(3, 1);
+    // await runBenchMark(3, 10);
+    // await runBenchMark(3, 50);
+    // await runBenchMark(3, 100);
+    // await runBenchMark(3, 200);
+    
+    // await runBenchMark(5, 1);
+    // await runBenchMark(5, 10);
+    // await runBenchMark(5, 50);
+    // await runBenchMark(5, 100);
+    // await runBenchMark(5, 200);
+
+    // await runBenchMark(10, 1);
+    // await runBenchMark(10, 10);
+    // await runBenchMark(10, 50);
+    // await runBenchMark(10, 100);
+    // await runBenchMark(10, 200);
+}
+
+
+runBenchmarks();
