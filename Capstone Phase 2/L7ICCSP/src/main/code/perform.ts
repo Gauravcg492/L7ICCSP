@@ -51,4 +51,4 @@ async function runBenchMark(initialCount: number, fileSize: number): Promise<voi
     }
 };
 
-runBenchMark(2, 10);
+runBenchMark(10, 200);
