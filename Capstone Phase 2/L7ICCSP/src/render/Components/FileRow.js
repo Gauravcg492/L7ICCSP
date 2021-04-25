@@ -80,9 +80,7 @@ const fileRow = (props) => {
         <span className="filedate">{props.date}</span></p>
       </div>
       <div>
-      <button onClick={deleteFileRow}><Delete/></button>
       {/* <button href={props.url}><Visibility/></button> */}
-      <button onClick={downloadFile}>Download</button>
       <button className="viewFile" onClick={downloadFile}>Download</button>
       <button className="deleteButton"onClick={deleteFileRow}>Delete</button>
       </div>

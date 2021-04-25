@@ -31,6 +31,7 @@ function UploadButton() {
 
   // On file upload (click the upload button)
   const onFileUpload = (props) => {
+    setSelectedFile(false);
     console.log("uploading", selectedFile.path);
     setLoaderState({...loaderState,open: true})
     window.api.filesApi.uploadAFile(selectedFile.path);
@@ -44,7 +45,6 @@ function UploadButton() {
         } else {
           enqueueSnackbar("Upload failed", { variant: "error" });
         }
-        setSelectedFile(null);
       })
       .catch((err) => console.log(err));
   };
@@ -55,30 +55,6 @@ function UploadButton() {
     if (selectedFile) {
       console.log(selectedFile);
       return (
-        // <Card className="atCard">
-        //   <InsertDriveFile
-        //     fontSize="large"
-        //     style={{ marginLeft: "1%", marginRight: "1%" }}
-        //   />
-        //   <p style={{ marginLeft: "1%", marginRight: "1%" }}>
-        //     {selectedFile.name}
-        //   </p>
-        //   <p style={{ marginLeft: "1%", marginRight: "1%" }}>
-        //     {selectedFile.path}
-        //   </p>
-        //   <Button
-        //     variant="outlined"
-        //     startIcon={<CloudUploadTwoTone />}
-        //     style={{
-        //       marginLeft: "auto",
-        //       marginRight: "1%",
-        //       textTransform: "none",
-        //     }}
-        //     onClick={onFileUpload}
-        //   >
-        //     Upload
-        //   </Button>
-        // </Card>
         <div className="filerowDownload">
           <FileIcon filename={selectedFile.name} />
           <div className="fileinfo">

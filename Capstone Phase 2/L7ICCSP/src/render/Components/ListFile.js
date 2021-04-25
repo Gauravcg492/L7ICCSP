@@ -59,9 +59,9 @@ const listFiles = (props) => {
     window.api.filesApi.isFileDownloaded().then((isDownloadDone) => {
       setLoaderState({...loaderState,open: false })
       if (isDownloadDone) {
-      enqueueSnackbar('Verified, AUTHENTIC', 'success');
+      enqueueSnackbar('Verified, AUTHENTIC',{variant: 'success'});
       } else {
-        enqueueSnackbar('File tampered', 'error');
+        enqueueSnackbar('File tampered', {variant: 'error'});
       }
       setLoading(false);
     });
