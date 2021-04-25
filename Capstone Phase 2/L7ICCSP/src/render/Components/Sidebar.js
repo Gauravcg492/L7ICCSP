@@ -2,10 +2,10 @@ import React from "react";
 import { HashRouter, Link, Route, Switch, Redirect } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCloudDownloadAlt,
-  faCloudUploadAlt,
-  faPlusSquare,
+  faUpload,
+  faPlus,
   faExchangeAlt,
+  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import { List, ListItem } from "@material-ui/core";
 import UploadButton from "./UploadButton";
@@ -41,17 +41,17 @@ function Sidebar() {
         <div className="navlist">
           <div className="navlistitem">
               <Link to="/upload">
-                <FontAwesomeIcon icon={faPlusSquare} /> Upload File
+                <FontAwesomeIcon icon={faPlus} /> Upload File
                 </Link>
           </div>
           <div className="navlistitem">
               <Link to="/uploads">
-                <FontAwesomeIcon icon={faCloudUploadAlt} /> Uploads
+                <FontAwesomeIcon icon={faUpload} /> Uploads
                 </Link>
           </div>
           <div className="navlistitem">
             <Link to="/downloads">
-              <FontAwesomeIcon icon={faCloudDownloadAlt} /> Downloads
+              <FontAwesomeIcon icon={faDownload} /> Downloads
                 </Link>
           </div>
         </div>

@@ -16,7 +16,7 @@ body {
   padding: 5px;
   align-content: center;
   margin: 5px;
-  min-width: 530px;
+  min-width: 510px;
   background-color: rgb(237, 241, 241);
   float: left;
 }
@@ -44,6 +44,26 @@ body {
 .filedate {
   font-size: 15px;
   font-weight:lighter;
+}
+
+.viewFile {
+  width: 80px;
+  color: black;
+  font-weight: bold;
+  padding: 5px;
+  border-width: 2px;
+  border-color: black;
+  border-radius: 5%;
+}
+
+.deleteButton {
+  width: 80px;
+  color: rgb(146, 0, 0);
+  font-weight: bold;
+  padding: 5px;
+  border-width: 2px;
+  border-color: red;
+  border-radius: 5%;
 }
 
 .logout {
@@ -118,7 +138,7 @@ body {
 .loginDiv_access{
   padding: 10px;
   margin: 3px;
-  background-color: rgb(82, 120, 170);
+  background-color: rgb(10, 240, 228);
   font-family: "", "Courier New", monospace;
   font-weight: bold;
   border-radius: 5px;
@@ -143,9 +163,10 @@ body {
 }
 
 .paperHeading {
-  color: rgb(99, 99, 99);
-  font-size: 20px;
-  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  color: rgb(126, 185, 138);
+  font-family: "", "Courier New", monospace;
+  font-size: 30px;
+  font-weight: bolder;
 }
 
 .uploadFilePage {
@@ -166,7 +187,7 @@ td {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: rgb(54, 54, 54);
+  background-color: black;
   overflow-x: hidden;
 
 }
@@ -199,32 +220,36 @@ td {
 .showFiles {
   display: flex;
   align-content: center;
-  height: 100%;
+  height: 90%;
   width: 100%;
   position: fixed;
   background-color: black;
 }
 
-.filecontainer {
-  height: 85%;
-  width: 73%;
-  min-width:500;
+.matPaper {
+  height: 90%;
+  width: 100%;
+  margin-bottom: 20px;
   align-self: center;
   overflow-y: auto;
-  padding: 15px;
 }
 
 .matCard {
+  font-family: "", "Courier New", monospace;
+  font-size: 25px;
+  width: 400px;
   display: flex;
   align-items: center;
+  margin-top: 35px;
 }
 
 .rec_list {
   float: left;
   clear: left;
 }
-.navlistitem {
+.navlist {
   padding: 1px;
+  padding-left: 30px;
 }
 
 #user {
@@ -322,4 +347,43 @@ td {
 @keyframes fadeout {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
+}
+
+/*Drag and drop css*/
+.dndtitle {
+  font-size: 2rem;
+  color: #4aa1f3;
+  font-weight: bold;
+}
+
+
+.dndcontainer p {
+  color: red;
+  text-align: center;
+}
+
+.dnddrop-container {
+  align-items: center;
+  justify-content: center;
+  border: 4px dashed #4aa1f3;
+  background-color: rgb(63, 63, 63);
+  min-height: 200px;
+  min-width: 300px;
+  width: 80%;
+  height: 40%;
+  padding: 6%;
+  margin: 30px;
+  margin-left: 0;
+}
+
+.dnddrop-message {
+  text-align: center;
+  color: white;
+  font-family: Arial;
+  font-size: 20px;
+}
+
+.MuiSnackbarContent-root {
+  background-color: rgb(199, 235, 206);
+  color: black;
 }

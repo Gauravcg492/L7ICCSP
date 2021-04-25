@@ -25,8 +25,8 @@ function FileRowDownloads(props) {
         <span className="filedate">{props.date}</span></p>
       </div>
       <div>
-      <button onClick={deleteFileRow}><Delete/></button>
-      <button onClick={openFile}><Launch/></button>
+      <button className="viewFile" onClick={openFile}>View</button>
+      <button className="deleteButton"onClick={deleteFileRow}>Delete</button>
       </div>
     </div>
   );

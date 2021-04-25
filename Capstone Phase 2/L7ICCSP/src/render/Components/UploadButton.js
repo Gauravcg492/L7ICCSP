@@ -1,98 +1,165 @@
 import { Paper, Card, Button } from "@material-ui/core";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import { CloudUploadTwoTone, InsertDriveFile } from "@material-ui/icons";
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faFileImport
+} from "@fortawesome/free-solid-svg-icons";
+import { SnackbarProvider, useSnackbar } from "notistack";
+import FileIcon from "./FileIcon";
 
-class UploadButton extends Component {
-  state = {
-    selectedFile: null,
-  };
+function Alert(props) {
+  return <MuiAlert elevation={6} {...props} />;
+}
 
-  onFileChange = (event) => {
-    this.setState({ selectedFile: event.target.files[0] });
+function UploadButton() {
+
+  const [loaderState, setLoaderState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+    message: "Uploading..."
+  });
+  const [selectedFile, setSelectedFile] = useState();
+  const { enqueueSnackbar } = useSnackbar();
+  const onFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
   };
 
   // On file upload (click the upload button)
-  onFileUpload = () => {
-    console.log("uploading", this.state.selectedFile.path);
-    window.api.filesApi.uploadAFile(this.state.selectedFile.path);
+  const onFileUpload = (props) => {
+    console.log("uploading", selectedFile.path);
+    setLoaderState({...loaderState,open: true})
+    window.api.filesApi.uploadAFile(selectedFile.path);
     window.api.filesApi
       .isFileUploaded()
       .then((fileId) => {
+        setLoaderState({...loaderState,open: false })
         if (fileId) {
-          alert("upload success");
-          this.props.updateUploads();
+          enqueueSnackbar("Upload success", { variant: "success" });
+          props.updateUploads();
         } else {
-          alert("upload failed");
+          enqueueSnackbar("Upload failed", { variant: "error" });
         }
-        this.setState({ selectedFile: null });
+        setSelectedFile(null);
       })
       .catch((err) => console.log(err));
   };
 
   // File content to be displayed after
   // file upload is complete
-  fileData = () => {
-    if (this.state.selectedFile) {
-      console.log(this.state.selectedFile);
+  const fileData = () => {
+    if (selectedFile) {
+      console.log(selectedFile);
       return (
-        <Card className="matCard">
-          <InsertDriveFile
-            fontSize="large"
-            style={{ marginLeft: "1%", marginRight: "1%" }}
-          />
-          <p style={{ marginLeft: "1%", marginRight: "1%" }}>
-            {this.state.selectedFile.name}
-          </p>
-          <p style={{ marginLeft: "1%", marginRight: "1%" }}>
-            {this.state.selectedFile.path}
-          </p>
-          <Button
-            variant="outlined"
-            startIcon={<CloudUploadTwoTone />}
-            style={{
-              marginLeft: "auto",
-              marginRight: "1%",
-              textTransform: "none",
-            }}
-            onClick={this.onFileUpload}
-          >
-            Upload
-          </Button>
-        </Card>
+        // <Card className="atCard">
+        //   <InsertDriveFile
+        //     fontSize="large"
+        //     style={{ marginLeft: "1%", marginRight: "1%" }}
+        //   />
+        //   <p style={{ marginLeft: "1%", marginRight: "1%" }}>
+        //     {selectedFile.name}
+        //   </p>
+        //   <p style={{ marginLeft: "1%", marginRight: "1%" }}>
+        //     {selectedFile.path}
+        //   </p>
+        //   <Button
+        //     variant="outlined"
+        //     startIcon={<CloudUploadTwoTone />}
+        //     style={{
+        //       marginLeft: "auto",
+        //       marginRight: "1%",
+        //       textTransform: "none",
+        //     }}
+        //     onClick={onFileUpload}
+        //   >
+        //     Upload
+        //   </Button>
+        // </Card>
+        <div className="filerowDownload">
+          <FileIcon filename={selectedFile.name} />
+          <div className="fileinfo">
+            <p className="filename">{selectedFile.name}<br />
+              <span className="filedate">{selectedFile.path}</span></p>
+          </div>
+          <div>
+            <button className="viewFile" onClick={onFileUpload}>Upload</button>
+          </div>
+        </div>
       );
     }
   };
 
-  render() {
-    return (
-      <div className="showFiles">
-        <Paper className="matPaper">
-          <Card className="matCard">
-            <p
-              className="pageHeading"
-              style={{ marginLeft: "1%", marginRight: "1%" }}
-            >
-              Upload a file
-            </p>
-            <div>
-              <input
-                id="contained-button-file"
-                type="file"
-                onChange={this.onFileChange}
-                style={{ display: "none" }}
-              />
-              <label htmlFor="contained-button-file">
-                <Button variant="contained" color="default" component="span" style={{textTransform:"none"}}>
-                  Choose a File
-                </Button>
-              </label>
-            </div>
-          </Card>
-          {this.fileData()}
-        </Paper>
-      </div>
-    );
+  // Drop events
+  const dragOver = (e) => {
+    e.preventDefault();
   }
+
+  const dragEnter = (e) => {
+    e.preventDefault();
+  }
+
+  const dragLeave = (e) => {
+    e.preventDefault();
+  }
+
+  const fileDrop = (e) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    setSelectedFile(files[0])
+
+  }
+
+  return (
+    <div>
+      <div className="matCard">
+        <p className="paperHeading"><FontAwesomeIcon icon={faPlus} /> Upload File</p>
+
+      </div>
+      <div className="howFiles">
+        <div className="atPaper">
+          <div>
+            <input
+              id="contained-button-file"
+              type="file"
+              onChange={onFileChange}
+              style={{ display: "none" }}
+            />
+            <label htmlFor="contained-button-file">
+              <Button variant="contained" color="default" component="span" style={{ textTransform: "none" }}>
+                Browse File
+                </Button>
+            </label>
+          </div>
+          <div className="dndcontainer"
+            onDragOver={dragOver}
+            onDragEnter={dragEnter}
+            onDragLeave={dragLeave}
+            onDrop={fileDrop}
+          >
+            <div className="dnddrop-container">
+              <div className="dnddrop-message"><FontAwesomeIcon icon={faFileImport} size='2x' /> Drag and Drop files here</div>
+            </div>
+          </div>
+          {fileData()}
+        </div>
+      </div>
+      <div>
+        <Snackbar
+          anchorOrigin={{vertical: "top", horizontal: "center" }}
+          open={loaderState.open}
+          key={loaderState.vertical + loaderState.horizontal}
+        >
+        <Alert severity="info">
+          {loaderState.message}
+        </Alert>
+        </Snackbar>
+      </div>
+    </div>
+  );
 }
 
 export default UploadButton;

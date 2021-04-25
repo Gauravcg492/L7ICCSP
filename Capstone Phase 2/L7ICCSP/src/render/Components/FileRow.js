@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Card, Button, CircularProgress } from "@material-ui/core";
+
 import {
-  InsertDriveFile,
   Delete,
-  CloudDownloadTwoTone,
+  Visibility
 } from "@material-ui/icons";
-import FileIcon from "./FileIcon"
+import FileIcon from "./FileIcon";
+
 
 /**
  *
@@ -21,6 +21,7 @@ const fileRow = (props) => {
   }
 
   const deleteFileRow = () => {
+    console.log("deleting file from cloud")
     props.deleteHandler("drive", props.id, setLoading);
   };
 
@@ -79,9 +80,11 @@ const fileRow = (props) => {
         <span className="filedate">{props.date}</span></p>
       </div>
       <div>
-      <button onClick={downloadFile}><Launch/></button>
       <button onClick={deleteFileRow}><Delete/></button>
-      <button href={props.url}><CloudDownloadTwoTone /></button>
+      {/* <button href={props.url}><Visibility/></button> */}
+      <button onClick={downloadFile}>Download</button>
+      <button className="viewFile" onClick={downloadFile}>Download</button>
+      <button className="deleteButton"onClick={deleteFileRow}>Delete</button>
       </div>
     </div>
   );
