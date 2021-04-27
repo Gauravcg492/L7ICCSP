@@ -18,6 +18,16 @@ contextBridge.exposeInMainWorld('api', {
         },
         doLogout(){
             ipcRenderer.send('logout');
+        },
+        requestUserInfo(){
+            ipcRenderer.send('getUserInfo');
+        },
+        receiveUserInfo(){
+            return new Promise((resolve, _) => {
+                ipcRenderer.on('userinfo', (_: any, userinfo: any) => {
+                    resolve(userinfo);
+                });
+            });
         }
     },
     filesApi: {

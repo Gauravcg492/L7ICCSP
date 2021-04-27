@@ -67,16 +67,24 @@ body {
 }
 
 .logout {
-  padding: 10px;
-  margin: 15px;
-  color:rgb(163, 27, 27);
+  padding: 7px;
+  margin-top: 5px;
+  color:black;
   font-family: "", "Courier New", monospace;
   font-weight: bold;
   border-radius: 5px;
-  font-size: 17px;
+  font-size: 15px;
+  float:right;
+}
+
+.userinfocontainer {
   position: absolute;
   top: 0;
   right: 0;
+  margin: 15px;
+  color: white;
+  text-align: right;
+  
 }
 .logo {
   margin: auto;

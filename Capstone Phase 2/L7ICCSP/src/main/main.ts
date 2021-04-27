@@ -87,6 +87,12 @@ ipcMain.on('isUserLoggedIn', async (event) => {
     event.sender.send('loginStatus', isLoggedIn());
 });
 
+ipcMain.on('getUserInfo', async (event) => {
+    const userInfo = tester.getUserInfo();
+    console.log(userInfo);
+    event.sender.send('userinfo',userInfo);
+});
+
 ipcMain.on('files', async (event, source) => {
     const fileObj = [];
     try {
