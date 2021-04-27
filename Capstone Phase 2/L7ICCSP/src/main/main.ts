@@ -13,7 +13,6 @@ import { log } from './code/utils/logger';
 // TODO handle global variables(singleton class)
 let access_cloud: GoogleAccessCloud;
 let operations: CloudOperations;
-var loggedIn = false;
 let tester: GoogleAuth;
 
 var win: BrowserWindow;

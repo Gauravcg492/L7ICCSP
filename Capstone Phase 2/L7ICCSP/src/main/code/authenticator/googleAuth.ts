@@ -70,14 +70,13 @@ export class GoogleAuth implements Authentication {
             this.token = fs.readFileSync(TOKEN_PATH);
             this.oAuth2Client.setCredentials(JSON.parse(this.token as unknown as string));
             this.setDrive(this.oAuth2Client);
-            this.userinfo = await this.drive.about.get({fields:'user'});
         } catch (err) {
             log("authorize() Error");
             this.token = "";
             log(err);
         }
     }
-
+    
     /**
      * Get and store new token after prompting for user authorization, and then
      * execute the given callback with the authorized OAuth2 client.
@@ -90,6 +89,7 @@ export class GoogleAuth implements Authentication {
             this.oAuth2Client.setCredentials(this.token['tokens']);
             this.setDrive(this.oAuth2Client);
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(this.token['tokens']));
+            this.userinfo = await this.drive.about.get({fields:'user'});
         } catch(err) {
             log("getAccessToken() Error");
             log(err);
