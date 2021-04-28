@@ -16,7 +16,7 @@ body {
   padding: 5px;
   align-content: center;
   margin: 5px;
-  min-width: 510px;
+  width: 510px;
   background-color: rgb(237, 241, 241);
   float: left;
 }
@@ -29,6 +29,9 @@ body {
 
 .filerowDownload button {
   margin: 5px;
+  float: right;
+  position: relative;
+  right:0;
 }
 
 .fileinfo {
@@ -40,6 +43,8 @@ body {
   font-size: 22px;
   font-family: "Noto Serif";
   font-weight: bold;
+  overflow-x: hidden;
+  max-width: 350px;
 }
 .filedate {
   font-size: 15px;

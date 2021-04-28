@@ -92,6 +92,10 @@ const listFiles = (props) => {
   };
 
   const displayFiles = () => {
+    if(fileState.length == 0){
+      console.log("no files")
+      return <p style={{color:"white"}}>NO FILES TO DISPLAY</p>
+    }
     if (props.source === "upload") {
       return (
         <>
