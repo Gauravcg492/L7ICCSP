@@ -20,6 +20,21 @@ var loginWin: BrowserWindow;
 
 const TOKEN_PATH = 'token.json';
 
+async function init() {
+    access_cloud = new GoogleAccessCloud(tester.getDrive());
+    let files = await access_cloud.searchFile('L7ICCSP', "");
+    if (files.length === 0) {
+        await access_cloud.putFolder('L7ICCSP', "");
+    }
+    files = await access_cloud.searchFile('merkle', "");
+    if (files.length === 0) {
+        await access_cloud.putFolder('merkle', "");
+    }
+    const storage: AccessStorage = new LocalAccessStorage();
+    operations = new CloudOperations(access_cloud, tester, storage);
+    await operations.setUser();
+}
+
 async function createWindow() {
     tester = new GoogleAuth();
     // const rl = readline.createInterface({
@@ -38,11 +53,12 @@ async function createWindow() {
     // rl.close();
 
     console.log("Operations Set")
-    
-    if(isLoggedIn()){
+
+    if (isLoggedIn()) {
+        await init()
         setWin();
-    }else{
-    setLoginWin();
+    } else {
+        setLoginWin();
     }
 }
 
@@ -64,21 +80,10 @@ ipcMain.on('storeAccessToken', async (event, access_token: string) => {
     console.log("access_token received ", access_token);
     await tester.getAccessToken(access_token);
     if (isLoggedIn()) {
-        access_cloud = new GoogleAccessCloud(tester.getDrive());
-        let files = await access_cloud.searchFile('L7ICCSP', "");
-        if (files.length === 0) {
-            await access_cloud.putFolder('L7ICCSP', "");
-        }
-        files = await access_cloud.searchFile('merkle', "");
-        if (files.length === 0) {
-            await access_cloud.putFolder('merkle', "");
-        }
-        const storage: AccessStorage = new LocalAccessStorage();
-        operations = new CloudOperations(access_cloud, tester, storage);
-        await operations.setUser();
+        await init();
         loginToWin();
     }
-    console.log("login status after accesstoken storage : ",isLoggedIn());
+    console.log("login status after accesstoken storage : ", isLoggedIn());
     event.sender.send('loginStatus', isLoggedIn());
 });
 
@@ -89,7 +94,7 @@ ipcMain.on('isUserLoggedIn', async (event) => {
 ipcMain.on('getUserInfo', async (event) => {
     const userInfo = tester.getUserInfo();
     console.log(userInfo);
-    event.sender.send('userinfo',userInfo);
+    event.sender.send('userinfo', userInfo);
 });
 
 ipcMain.on('files', async (event, source) => {
@@ -189,7 +194,7 @@ ipcMain.on('open', async (event, filename) => {
 // 2.run "await tester.authorize()"
 // 3. ToggleWindow
 
-ipcMain.on('logout', async(event) => {
+ipcMain.on('logout', async (event) => {
     log("logging out user");
     fs.unlinkSync(TOKEN_PATH);
     await tester.authorize();
@@ -225,7 +230,7 @@ function winToLogin() {
     win.close();
 }
 
-function setWin(){
+function setWin() {
     win = new BrowserWindow({
         width: 1440,
         height: 1080,
@@ -242,7 +247,7 @@ function setWin(){
     });
 }
 
-function setLoginWin(){
+function setLoginWin() {
     loginWin = new BrowserWindow(
         {
             width: 720,

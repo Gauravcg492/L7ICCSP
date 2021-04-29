@@ -70,6 +70,7 @@ export class GoogleAuth implements Authentication {
             this.token = fs.readFileSync(TOKEN_PATH);
             this.oAuth2Client.setCredentials(JSON.parse(this.token as unknown as string));
             this.setDrive(this.oAuth2Client);
+            this.userinfo = await this.drive.about.get({fields:'user'});
         } catch (err) {
             log("authorize() Error");
             this.token = "";
