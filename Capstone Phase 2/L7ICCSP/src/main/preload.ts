@@ -6,6 +6,13 @@ contextBridge.exposeInMainWorld('api', {
         openLoginUrlOnBrowser() {
             ipcRenderer.send('openLoginUrlOnBrowser');
         },
+        getLoginUrl() {
+            return new Promise((resolve, _) => {
+                ipcRenderer.on('getLoginUrl', (_: any, url: string) => {
+                    resolve(url);
+                });
+            });
+        },
         sendAccessToken(access_token: string){
             ipcRenderer.send('storeAccessToken',access_token);
         },

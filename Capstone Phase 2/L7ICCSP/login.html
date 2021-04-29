@@ -2,9 +2,9 @@
 <html>
 
 <head>
-  <link rel="stylesheet" href="./src/render/static/index.css">
+  <link rel="stylesheet" href="static/index.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="./src/render/Components/Login.js"></script>
+  <script src="static/Login.js"></script>
   <meta charset="UTF-8">
   <title>L7ICCSP login</title>
 </head>
@@ -19,12 +19,12 @@
     
   </div>
   <div class="loginDiv">
-    <button class="loginDiv_access" onclick="oauthPrompt()"><img src = "./src/render/assets/drive-logo.svg" width=20px height=20px/> Get Google Drive access</button>
+    <button class="loginDiv_access" onclick="oauthPrompt()"><img src = "static/assets/drive-logo.svg" width=20px height=20px/> Get Google Drive access</button>
     <br />
     <p>Paste access token below</p>
     <textarea id="accesstokeninput" class="inputBox"></textarea>
     <button class="loginDiv_submit" onClick="storeAccessToken()">
-      <img src = "./src/render/assets/signin-logo.svg" width=25px height=25px/>
+      <img src = "static/assets/signin-logo.svg" width=25px height=25px/>
     </button>
   </div>
   </div>

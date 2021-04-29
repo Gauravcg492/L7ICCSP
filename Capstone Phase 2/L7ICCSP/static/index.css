@@ -16,9 +16,10 @@ body {
   padding: 5px;
   align-content: center;
   margin: 5px;
-  width: 510px;
+  width: 45%;
+  height: 20%;
   background-color: rgb(237, 241, 241);
-  float: left;
+  /* float: left; */
 }
 
 .filerowDownload div {

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, ipcRenderer, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import path from 'path';
 import { GoogleAuth } from "./code/authenticator/googleAuth";
 import { GoogleAccessCloud } from "./code/cloud/google_access_cloud";
@@ -73,6 +73,7 @@ if (process.env.RELOAD) {
 ipcMain.on('openLoginUrlOnBrowser', async (event) => {
     console.log("request to fetch login url");
     const url = tester.getAuthUrl();
+    event.sender.send('getLoginUrl', url);
     shell.openExternal(url);
 });
 
