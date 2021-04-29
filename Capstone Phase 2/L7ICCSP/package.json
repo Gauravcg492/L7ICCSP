@@ -10,7 +10,7 @@
     "start": "npm run build-tsc && electron .",
     "reloader": "RELOAD=true npm start",
     "test1": "tsc && node build/main/code/cli.js",
-    "dist": "electron-builder",
+    "dist": "npm run render && tsc && electron-builder",
     "temp": "tsc && node build/main/code/utils/nodeParser.js",
     "watch": "webpack --config webpack.common.js --watch",
     "hashTest": "tsc && node build/main/code/utils/hashes.js"
