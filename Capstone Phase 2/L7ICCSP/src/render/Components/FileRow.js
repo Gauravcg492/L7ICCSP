@@ -2,8 +2,10 @@ import React, { useState } from "react";
 
 import {
   Delete,
-  Visibility
+  Visibility,
+  OpenInNew
 } from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
 import FileIcon from "./FileIcon";
 
 
@@ -17,7 +19,7 @@ const fileRow = (props) => {
   const [loading, setLoading] = useState(false);
 
   const downloadFile = () => {
-      props.downloadHandler(props.id, props.name, setLoading);
+    props.downloadHandler(props.id, props.name, setLoading);
   }
 
   const deleteFileRow = () => {
@@ -74,15 +76,15 @@ const fileRow = (props) => {
     //   {loading && <CircularProgress size={24} style={{marginLeft:'1%', marginRight:'1%'}} />}
     // </Card>
     <div className="filerowDownload">
-      <FileIcon filename={props.name}/>
+      <FileIcon filename={props.name} />
       <div className="fileinfo">
-        <p className="filename">{props.name}<br/>
-        <span className="filedate">{props.date}</span></p>
+        <p className="filename">{props.name}<span><IconButton color="primary" href={props.url} target="_blank" title="Open In Drive"><OpenInNew /></IconButton></span><br />
+          <span className="filedate">{props.date}</span></p>
       </div>
       <div>
-      {/* <button href={props.url}><Visibility/></button> */}
-      <button className="viewFile" onClick={downloadFile}>Download</button>
-      <button className="deleteButton"onClick={deleteFileRow}>Delete</button>
+        {/* <button href={props.url}><Visibility/></button> */}
+        <button className="viewFile" onClick={downloadFile}>Download</button>
+        <button className="deleteButton" onClick={deleteFileRow}>Delete</button>
       </div>
     </div>
   );
