@@ -5,9 +5,9 @@
   "main": "build/main/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-tsc": "tsc",
+    "build": "npm run render && tsc",
     "render": "webpack --config webpack.common.js",
-    "start": "npm run build-tsc && electron .",
+    "start": "npm run build && electron .",
     "reloader": "RELOAD=true npm start",
     "test1": "tsc && node build/main/code/cli.js",
     "dist": "npm run render && tsc && electron-builder",
