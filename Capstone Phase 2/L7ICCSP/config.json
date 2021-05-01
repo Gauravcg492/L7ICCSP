@@ -1,0 +1,8 @@
+{
+    "rootHash" : {
+        "directory" : "./", 
+        "filename" : "details.json"
+    },
+
+    "downloadsPath" : "./downloads"
+}

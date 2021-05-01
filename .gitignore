@@ -2,4 +2,14 @@
 node_modules/
 dist/
 build/
+downloads/
 package-lock.json
+credentials.json
+token.json
+yarn.lock
+details.json
+temp/
+count.json
+.idea
+test_data
+.DS_Store

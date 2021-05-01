@@ -3,7 +3,7 @@ const ForkTsCheckerWebpackPlugin = require( 'fork-ts-checker-webpack-plugin' );
 
 module.exports = {
   mode: "development",
-  entry: "./src/render/app.tsx",
+  entry: "./src/render/index.js",
   devtool: "source-map",
   target: "electron-renderer",
   module: {
@@ -28,17 +28,15 @@ module.exports = {
           },
         },
       },
-      {
-        test: [/\.s[ac]ss$/i, /\.css$/i],
-        use: [
-          // Creates `style` nodes from JS strings
-          "style-loader",
-          // Translates CSS into CommonJS
-          "css-loader",
-          // Compiles Sass to CSS
-          "sass-loader",
-        ],
-      },
+      /*{
+        test: [/\.css$/i],
+        use: {
+          loader: "css-loader",
+          options: {
+            import: true,
+          },
+        },
+      },*/
       {
         test: [/\.(ts|tsx)$/],
         exclude: /node_modules/,
@@ -51,6 +49,20 @@ module.exports = {
       },
     ],
   },
+  module: {
+    rules: [
+        {
+            test: path.join(__dirname, '.'),
+            exclude: /(node_modules)/,
+            loader: 'babel-loader',
+            options: {
+                presets: ['@babel/preset-env',
+                          '@babel/react',{
+                          'plugins': ['@babel/plugin-proposal-class-properties']}]
+            }
+        }
+    ]
+},
   // plugins
   plugins: [
     new ForkTsCheckerWebpackPlugin(), // run TSC on a separate thread

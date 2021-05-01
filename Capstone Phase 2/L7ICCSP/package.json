@@ -5,24 +5,36 @@
   "main": "build/main/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-tsc": "tsc",
+    "build": "npm run render && tsc",
     "render": "webpack --config webpack.common.js",
-    "start": "npm run build-tsc && electron .",
-    "dist": "electron-builder"
+    "start": "npm run build && electron .",
+    "reloader": "RELOAD=true npm start",
+    "test1": "tsc && node build/main/code/cli.js",
+    "dist": "npm run render && tsc && electron-builder",
+    "temp": "tsc && node build/main/code/utils/nodeParser.js",
+    "watch": "webpack --config webpack.common.js --watch",
+    "hashTest": "tsc && node build/main/code/utils/hashes.js"
   },
   "keywords": [],
   "author": "PW21HBP02",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.12.10",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
+    "@iconify-icons/mdi": "^1.1.14",
+    "@iconify/react": "^1.1.4",
+    "@types/crypto-js": "^4.0.1",
+    "@types/gapi": "^0.0.39",
+    "@types/jsonfile": "^6.0.0",
     "@types/node": "^14.14.20",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "babel-loader": "^8.2.2",
-    "electron": "^11.2.0",
+    "electron": "^12.0.5",
     "electron-builder": "^22.9.1",
+    "electron-reloader": "^1.2.0",
     "fork-ts-checker-webpack-plugin": "^6.1.0",
     "ts-loader": "^8.0.14",
     "typescript": "^4.1.3",
@@ -30,18 +42,40 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.58",
+    "crypto-js": "^4.0.0",
+    "fs": "^0.0.1-security",
+    "googleapis": "^39.2.0",
+    "jsonfile": "^6.1.0",
+    "notistack": "^1.0.6",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0"
   },
   "build": {
-    "appId": "com.app.soft",
+    "appId": "com.pes.l7iccsp",
     "files": [
       "build/**/*",
+      "node_modules/**/*",
       "package.json",
-      "index.html"
+      "index.html",
+      "login.html",
+      "credentials.json",
+      "config.json",
+      "temp/",
+      "downloads/",
+      "static/**/*"
     ],
     "win": {
       "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
     }
   }
 }

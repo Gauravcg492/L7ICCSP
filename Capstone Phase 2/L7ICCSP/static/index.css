@@ -1,0 +1,403 @@
+body {
+  font-family: "Lato", sans-serif;
+  background-color: black;
+  /* background-color: rgb(53, 51, 51); */
+}
+
+#root {
+  display: block;
+}
+
+.filerowDownload {
+  display: flex; 
+  font-family: "Arial";
+  border: 2px solid grey;
+  border-radius: 8px;
+  padding: 5px;
+  align-content: center;
+  margin: 5px;
+  width: 45%;
+  height: 20%;
+  background-color: rgb(237, 241, 241);
+  /* float: left; */
+}
+
+.filerowDownload div {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 2px;
+}
+
+.filerowDownload button {
+  margin: 5px;
+  float: right;
+  position: relative;
+  right:0;
+}
+
+.fileinfo {
+  width: 80%;
+  margin-left: 10px;
+}
+
+.filename {
+  font-size: 22px;
+  font-family: "Noto Serif";
+  font-weight: bold;
+  overflow-x: hidden;
+  max-width: 350px;
+}
+.filedate {
+  font-size: 15px;
+  font-weight:lighter;
+}
+
+.viewFile {
+  width: 80px;
+  color: black;
+  font-weight: bold;
+  padding: 5px;
+  border-width: 2px;
+  border-color: black;
+  border-radius: 5%;
+}
+
+.deleteButton {
+  width: 80px;
+  color: rgb(146, 0, 0);
+  font-weight: bold;
+  padding: 5px;
+  border-width: 2px;
+  border-color: red;
+  border-radius: 5%;
+}
+
+.logout {
+  padding: 7px;
+  margin-top: 5px;
+  color:black;
+  font-family: "", "Courier New", monospace;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 15px;
+  float:right;
+}
+
+.userinfocontainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 15px;
+  color: white;
+  text-align: right;
+  
+}
+.logo {
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.logo p {
+  color: rgb(10, 255, 55);
+  font-family: "", "Courier New", monospace;
+  font-size: 45px;
+  font-weight: bold;
+  padding: 10px;
+}
+.logo span {
+  font-size: 18px;
+  font-family: "Noto Serif";
+  color: white;
+}
+
+.logoMega {
+  color: rgb(10, 255, 55);
+  font-family: "", "Courier New", monospace;
+  font-size: 75px;
+  text-align: center;
+  font-weight: bold;
+}
+
+
+.logoMega span {
+  font-size: 35px;
+  font-family: "Noto Serif";
+  color: rgb(126, 185, 138);
+  margin-top: 10px;
+}
+
+.inputBox {
+  width: 400px;
+  font-family: "", "Courier New", monospace;
+  height: 65px;
+  font-size: 18px;
+}
+
+.loginDiv p{
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  color: rgb(84, 102, 88);
+  font-family: "", "Courier New", monospace;
+  font-size: 22px;
+}
+
+.loginDiv{
+  text-align:center;
+  color: rgb(199, 235, 206);
+  font-family: "", "Courier New", monospace;
+  font-size: 30px;
+}
+
+.loginDiv_access{
+  padding: 10px;
+  margin: 3px;
+  background-color: rgb(10, 240, 228);
+  font-family: "", "Courier New", monospace;
+  font-weight: bold;
+  border-radius: 5px;
+  border-color: blue;
+  font-size: 20px;
+}
+
+.loginDiv_submit{
+  display: block;
+  margin: auto;
+  background-color: rgb(4, 221, 69);
+  font-family: "", "Courier New", monospace;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 5%;
+}
+
+.pageHeading {
+  color: rgb(99, 99, 99);
+  font-size: 30px;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.paperHeading {
+  color: rgb(126, 185, 138);
+  font-family: "", "Courier New", monospace;
+  font-size: 30px;
+  font-weight: bolder;
+}
+
+.uploadFilePage {
+  margin: 30px;
+}
+
+.uploadFilePage th,
+td {
+  text-align: left;
+  margin: 10px;
+  padding: 10px;
+}
+
+.sidenav {
+  height: 100%;
+  width: 300px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: black;
+  overflow-x: hidden;
+
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 22px;
+  color: #818181;
+  display: block;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.album_info:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  margin-left: 300px; /* Same as the width of the sidenav */
+  padding: 0px 10px;
+  height: 100%;
+}
+
+.showFiles {
+  display: flex;
+  align-content: center;
+  height: 90%;
+  width: 100%;
+  position: fixed;
+  background-color: black;
+}
+
+.matPaper {
+  height: 90%;
+  width: 100%;
+  margin-bottom: 20px;
+  align-self: center;
+  overflow-y: auto;
+}
+
+.matCard {
+  font-family: "", "Courier New", monospace;
+  font-size: 25px;
+  width: 400px;
+  display: flex;
+  align-items: center;
+  margin-top: 35px;
+}
+
+.rec_list {
+  float: left;
+  clear: left;
+}
+.navlist {
+  padding: 1px;
+  padding-left: 30px;
+}
+
+#user {
+  position: fixed;
+  top: 0;
+  right: 0;
+  color: #000;
+  padding: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
+  border-radius: 5px;
+  background-color: rgb(255, 255, 255);
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 20px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+.listing ul {
+  list-style: none;
+  width: 428px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.listing ul li {
+  border-bottom: 1px solid #ddd;
+  padding: 5px;
+  overflow: hidden;
+}
+
+.listing ul li img {
+  width: 60px;
+  height: 60px;
+  float: left;
+  border: none;
+  padding-top: 5px;
+}
+
+.listing ul li p {
+  margin-left: 75px;
+  font-size: 20px;
+
+  padding-top: 12px;
+  color: #6e7a7f;
+}
+
+
+
+/*SNACKBAR CSS*/
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+/*Drag and drop css*/
+.dndtitle {
+  font-size: 2rem;
+  color: #4aa1f3;
+  font-weight: bold;
+}
+
+
+.dndcontainer p {
+  color: red;
+  text-align: center;
+}
+
+.dnddrop-container {
+  align-items: center;
+  justify-content: center;
+  border: 4px dashed #4aa1f3;
+  background-color: rgb(63, 63, 63);
+  min-height: 200px;
+  min-width: 300px;
+  width: 80%;
+  height: 40%;
+  padding: 6%;
+  margin: 30px;
+  margin-left: 0;
+}
+
+.dnddrop-message {
+  text-align: center;
+  color: white;
+  font-family: Arial;
+  font-size: 20px;
+}
+
+.MuiSnackbarContent-root {
+  background-color: rgb(199, 235, 206);
+  color: black;
+}
