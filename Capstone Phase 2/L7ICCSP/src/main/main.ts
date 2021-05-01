@@ -52,7 +52,7 @@ async function createWindow() {
     // }
     // rl.close();
 
-    console.log("Operations Set")
+    log("Operations Set")
 
     if (isLoggedIn()) {
         await init()
@@ -71,20 +71,20 @@ if (process.env.RELOAD) {
 
 // Electron EndPoints
 ipcMain.on('openLoginUrlOnBrowser', async (event) => {
-    console.log("request to fetch login url");
+    log("request to fetch login url");
     const url = tester.getAuthUrl();
     event.sender.send('getLoginUrl', url);
     shell.openExternal(url);
 });
 
 ipcMain.on('storeAccessToken', async (event, access_token: string) => {
-    console.log("access_token received ", access_token);
+    log("access_token received ", access_token);
     await tester.getAccessToken(access_token);
     if (isLoggedIn()) {
         await init();
         loginToWin();
     }
-    console.log("login status after accesstoken storage : ", isLoggedIn());
+    log("login status after accesstoken storage : ", isLoggedIn());
     event.sender.send('loginStatus', isLoggedIn());
 });
 
@@ -94,7 +94,7 @@ ipcMain.on('isUserLoggedIn', async (event) => {
 
 ipcMain.on('getUserInfo', async (event) => {
     const userInfo = tester.getUserInfo();
-    console.log(userInfo);
+    log(userInfo);
     event.sender.send('userinfo', userInfo);
 });
 

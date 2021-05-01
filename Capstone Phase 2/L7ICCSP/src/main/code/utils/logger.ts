@@ -1,4 +1,4 @@
-const debug = true;
+const debug = false;
 
 export const log = (...msg:any[]) => {
     if(debug) {
