@@ -1,17 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Paper, Card, Avatar, IconButton } from "@material-ui/core";
 import { Refresh } from "@material-ui/icons";
+import { useSnackbar, SnackbarProvider } from 'notistack';
 import FileRow from "./FileRow";
 import FileRowDownloads from "./FileRowDownloads";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUpload,
+  faDownload,
+} from "@fortawesome/free-solid-svg-icons";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 /**
  *
  * @param {source, title} props
  * @returns DOM Element
  */
+
+ function Alert(props) {
+  return <MuiAlert elevation={6} {...props} />;
+}
+
 const listFiles = (props) => {
   const [fileState, setfileState] = useState([]);
   const [pathState, setPathState] = useState("");
+
+  const [loaderState, setLoaderState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+    message: "Downloading..."
+  });
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  var pageicon = <FontAwesomeIcon icon={faUpload} />
+  if (props.title == "Downloads") {
+    pageicon = <FontAwesomeIcon icon={faDownload} />
+  }
 
   const onRequestForFilesList = () => {
     console.log("fetching file-list from " + props.source);
@@ -26,13 +53,15 @@ const listFiles = (props) => {
 
   const onDownloadFileFromCloud = (id, name, setLoading) => {
     setLoading(true);
+    setLoaderState({...loaderState,open: true})
     console.log("requesting to download ", name, ", id: ", id);
     window.api.filesApi.downloadAFile(name, id);
     window.api.filesApi.isFileDownloaded().then((isDownloadDone) => {
+      setLoaderState({...loaderState,open: false })
       if (isDownloadDone) {
-        alert("verified, AUTHENTIC :)");
+      enqueueSnackbar('Verified, AUTHENTIC',{variant: 'success'});
       } else {
-        alert("download failed");
+        enqueueSnackbar('File tampered', {variant: 'error'});
       }
       setLoading(false);
     });
@@ -42,7 +71,7 @@ const listFiles = (props) => {
     window.api.filesApi.openFile(name);
     window.api.filesApi.isFileOpened().then((isOpened) => {
       if (!isOpened) {
-        alert("Unable to open file");
+        enqueueSnackbar('Open failed',{variant: 'warning'});
       }
     });
   };
@@ -53,16 +82,20 @@ const listFiles = (props) => {
     window.api.filesApi.deleteFile(source, sourceId);
     window.api.filesApi.isFileDeleted().then((isDeleted) => {
       if (isDeleted) {
-        alert("Delete Successful");
+        enqueueSnackbar('File deleted',{variant: 'info'});
         onRequestForFilesList();
       } else {
-        alert("Delete Unsuccessful");
+        enqueueSnackbar('Delete failed',{variant: 'error'});
       }
       setLoading(false);
     });
   };
 
   const displayFiles = () => {
+    if(fileState.length == 0){
+      console.log("no files")
+      return <p style={{color:"white"}}>NO FILES TO DISPLAY</p>
+    }
     if (props.source === "upload") {
       return (
         <>
@@ -109,22 +142,30 @@ const listFiles = (props) => {
   }
 
   return (
-    <div className="showFiles">
-      <Paper className="matPaper">
-        <Card className="matCard">
-          <Avatar style={{ marginLeft: "1%", marginRight: "1%" }}>
-            {props.title[0]}
-          </Avatar>
-          <p className="paperHeading">{props.title}</p>
-          <IconButton
-            style={{ marginLeft: "auto" }}
-            onClick={onRequestForFilesList}
-          >
-            <Refresh />
-          </IconButton>
-        </Card>
-        {displayFiles()}
-      </Paper>
+    <div>
+      <div className="matCard">
+        <p className="paperHeading">{pageicon} {props.title}</p>
+        <IconButton
+          style={{ marginLeft: "auto" }}
+          onClick={onRequestForFilesList}
+        >
+          <Refresh />
+        </IconButton>
+      </div>
+      <div className="showFiles">
+        <div className="matPaper">
+          {displayFiles()}
+        </div>
+      </div>
+      <Snackbar
+          anchorOrigin={{vertical: "top", horizontal: "center" }}
+          open={loaderState.open}
+          key={loaderState.vertical + loaderState.horizontal}
+        >
+        <Alert severity="info">
+          {loaderState.message}
+        </Alert>
+        </Snackbar>
     </div>
   );
 };

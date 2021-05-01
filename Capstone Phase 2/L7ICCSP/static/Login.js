@@ -1,6 +1,11 @@
 function oauthPrompt(){
     console.log("request backend for auth url");
     window.api.loginApi.openLoginUrlOnBrowser();
+    window.api.loginApi.getLoginUrl().then(
+      (url) => {
+        console.log("Url: ", url);
+      }
+    );
 }
 
 function storeAccessToken(){

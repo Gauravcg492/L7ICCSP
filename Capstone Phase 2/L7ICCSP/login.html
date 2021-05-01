@@ -2,28 +2,32 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="./src/render/static/index.css">
-    <script src="./src/render/Components/Login.js"></script> 
-    <meta charset="UTF-8">
-    <title>L7ICCSP login</title>
+  <link rel="stylesheet" href="static/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="static/Login.js"></script>
+  <meta charset="UTF-8">
+  <title>L7ICCSP login</title>
 </head>
 
 <body>
-        <div class="logoMega">
-          <p>
-            <i class="fas fa-exchange-alt"></i>
-            <b> L7ICCSP</b>
-          </p>
-        </div>
-        <br />
-        <div class="loginDiv">
-          <button class="loginDiv_access" onclick="oauthPrompt()"><i class="fab fa-google-drive"></i> Grant Access to Google Drive</button>
-          <br />
-          <p>Paste access token below</p>
-          <input id="accesstokeninput" class="inputBox" />
-          <button class="loginDiv_submit" onClick="storeAccessToken()"> <FontAwesomeIcon icon={faCaretRight} />></button>
-        </div>
-      </div>
+  <div class="logoMega">
+    <p>
+      L7ICCSP
+      <br/>
+      <span>File Integrity Check Platform</span>
+    </p>
+    
+  </div>
+  <div class="loginDiv">
+    <button class="loginDiv_access" onclick="oauthPrompt()"><img src = "static/assets/drive-logo.svg" width=20px height=20px/> Get Google Drive access</button>
+    <br />
+    <p>Paste access token below</p>
+    <textarea id="accesstokeninput" class="inputBox"></textarea>
+    <button class="loginDiv_submit" onClick="storeAccessToken()">
+      <img src = "static/assets/signin-logo.svg" width=25px height=25px/>
+    </button>
+  </div>
+  </div>
 </body>
 
 </html>
