@@ -21,6 +21,12 @@ var loginWin: BrowserWindow;
 const TOKEN_PATH = 'token.json';
 
 async function init() {
+    // Check if necessary folders are present in local
+    if(!fs.existsSync("./temp")) {
+        fs.mkdirSync("temp")
+    }
+
+    // Check if necessary folders are present in cloud
     access_cloud = new GoogleAccessCloud(tester.getDrive());
     let files = await access_cloud.searchFile('L7ICCSP', "");
     if (files.length === 0) {

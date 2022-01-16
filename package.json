@@ -50,7 +50,7 @@
     "@material-ui/lab": "^4.0.0-alpha.58",
     "crypto-js": "^4.0.0",
     "fs": "^0.0.1-security",
-    "googleapis": "^39.2.0",
+    "googleapis": "^92.0.0",
     "jsonfile": "^6.1.0",
     "notistack": "^1.0.6",
     "react": "^17.0.1",
